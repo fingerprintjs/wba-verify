@@ -4,8 +4,8 @@ Frontend for the wba-quickstart - to handle Web Bot Authentication
 
 ## 🚀 Tech Stack
 
-- **[Astro](https://astro.build/)** - Modern web framework
-- **[Svelte](https://svelte.dev/)** - Component framework
+- **[Astro](https://astro.build/)** v5.16+ - Modern web framework
+- **[Svelte](https://svelte.dev/)** v5.17+ - Component framework with modern runes syntax
 - **[TypeScript](https://www.typescriptlang.org/)** - Type safety
 - **[Vercel](https://vercel.com/)** - Deployment platform
 
@@ -90,14 +90,18 @@ Create a `.env` file based on `.env.example` for local development. For producti
 
 ### Svelte Components
 
-Create `.svelte` files in `src/components/`:
+Create `.svelte` files in `src/components/` using Svelte 5's modern runes syntax:
 
 ```svelte
 <script lang="ts">
-  // Your TypeScript code
+  let count = $state(0);
+  
+  function increment() {
+    count += 1;
+  }
 </script>
 
-<!-- Your HTML -->
+<button onclick={increment}>{count}</button>
 
 <style>
   /* Your styles */

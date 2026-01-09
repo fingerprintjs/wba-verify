@@ -1,5 +1,5 @@
 <script lang="ts">
-	let count: number = 0;
+	let count = $state(0);
 	
 	function increment() {
 		count += 1;
@@ -11,9 +11,9 @@
 </script>
 
 <div class="counter">
-	<button on:click={decrement}>-</button>
+	<button onclick={decrement}>-</button>
 	<span class="count">{count}</span>
-	<button on:click={increment}>+</button>
+	<button onclick={increment}>+</button>
 </div>
 
 <style>
