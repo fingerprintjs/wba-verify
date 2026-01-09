@@ -1,0 +1,61 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Counter from '../components/Counter.svelte';
+---
+
+<Layout title="WBA Verify - Web Bot Auth">
+	<main>
+		<div class="container">
+			<h1>WBA Verify</h1>
+			<p class="subtitle">Web Bot Auth Verification Frontend</p>
+			<div class="card">
+				<h2>Welcome</h2>
+				<p>
+					This is the frontend for the wba-quickstart project to handle Web Bot Authentication.
+				</p>
+				<Counter client:load />
+			</div>
+		</div>
+	</main>
+</Layout>
+
+<style>
+	main {
+		margin: auto;
+		padding: 1rem;
+		width: 800px;
+		max-width: calc(100% - 2rem);
+		color: white;
+		font-size: 20px;
+		line-height: 1.6;
+	}
+	.container {
+		padding: 2rem;
+	}
+	h1 {
+		font-size: 4rem;
+		font-weight: 700;
+		line-height: 1;
+		text-align: center;
+		margin-bottom: 1em;
+		background: var(--accent-gradient);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+	.subtitle {
+		text-align: center;
+		margin-bottom: 2rem;
+		color: rgb(var(--accent-light));
+	}
+	.card {
+		background: rgba(255, 255, 255, 0.05);
+		border-radius: 8px;
+		padding: 2rem;
+		margin-top: 2rem;
+	}
+	.card h2 {
+		margin-top: 0;
+		color: rgb(var(--accent-light));
+	}
+</style>
