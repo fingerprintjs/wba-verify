@@ -8,7 +8,7 @@
   // Figlet banner
   const FIGLET =
     '██╗    ██╗██████╗  █████╗ ██╗   ██╗\n██║    ██║██╔══██╗██╔══██╗██║   ██║\n██║ █╗ ██║██████╔╝███████║██║   ██║\n██║███╗██║██╔══██╗██╔══██║╚██╗ ██╔╝\n╚███╔███╔╝██████╔╝██║  ██║ ╚████╔╝ \n ╚══╝╚══╝ ╚═════╝ ╚═╝  ╚═╝  ╚═══╝  \n WEB BOT AUTH VERIFICATION v0.0.1'
-  const filgetLines = FIGLET.split('\n').map((line) => (line.length === 0 ? '\u00A0' : line))
+  const figletLines = FIGLET.split('\n').map((line) => (line.length === 0 ? '\u00A0' : line))
 
   // Create loading spinner and xterm.js terminal
   let bootLoader: HTMLElement
@@ -23,12 +23,12 @@
   }
 
   // Status text
-  type statusText = [string, string]
+  type StatusText = [string, string]
 
-  let lastStatusText: statusText | null = null
+  let lastStatusText: StatusText | null = null
 
   $: statusText = (() => {
-    const next: statusText | null =
+    const next: StatusText | null =
       $verification.status === 'success'
         ? ['Verification Successful', 'Your bot is signed']
         : $verification.status === 'error'
@@ -93,7 +93,7 @@
     <div class="terminal__content">
       <!-- Banner -->
       <div class="terminal__figlet">
-        {#each filgetLines as line, i}
+        {#each figletLines as line, i}
           <pre class="figlet__line" style="--i:{i}" aria-hidden="true">{line}</pre>
         {/each}
       </div>
