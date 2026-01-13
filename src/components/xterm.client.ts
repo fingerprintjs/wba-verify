@@ -7,7 +7,7 @@ import { verification, type VerificationState } from '../stores/verification.ts'
 import { isMuted } from '../stores/audio.ts'
 import { varValue } from '../utils/cssVar.ts'
 import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
-import type {Terminal} from "@xterm/xterm";
+import type { Terminal } from '@xterm/xterm'
 
 // ANSI colors
 const ANSI = {
@@ -47,8 +47,8 @@ const commands: Record<string, CommandSpec> = {
     category: 'commands',
     description: 'Clear the terminal',
     handler: (_args, term) => {
-      term.clear();
-      renderIntro(term);
+      term.clear()
+      renderIntro(term)
     },
   },
   curl: {
@@ -93,10 +93,14 @@ const commands: Record<string, CommandSpec> = {
 // Command handlers
 function helpCommand(_args: string[], term: Xterm.Terminal) {
   for (const category of ['info', 'commands'] as const) {
-    const entries = Object.entries(commands).filter(([, spec]) => spec.category === category && !spec.isHidden)
+    const entries = Object.entries(commands).filter(
+      ([, spec]) => spec.category === category && !spec.isHidden
+    )
     if (!entries.length) continue
 
-    term.write(`${ANSI.bold}${ANSI.fg.dim}${category.charAt(0).toUpperCase() + category.slice(1)}${ANSI.reset}\r\n`)
+    term.write(
+      `${ANSI.bold}${ANSI.fg.dim}${category.charAt(0).toUpperCase() + category.slice(1)}${ANSI.reset}\r\n`
+    )
     for (const [i, [name, spec]] of entries.entries()) {
       term.write(
         `  ${name.padEnd(8)} ${ANSI.fg.dim}: ${spec.description}${ANSI.reset}\r${i === entries.length - 1 ? '' : '\n'}`
@@ -110,8 +114,8 @@ function helpCommand(_args: string[], term: Xterm.Terminal) {
   )
 }
 
-function renderIntro(term: Terminal){
-    term.write(intro);
+function renderIntro(term: Terminal) {
+  term.write(intro)
 }
 
 const CURL_CMD =
@@ -121,16 +125,18 @@ const CURL_CMD =
   '     -H "Signature-Agent: https://chatgpt.com" \\\r\n' +
   '     https://wba-quickstart.vercel.app'
 
-type PendingPrompt =
-  | { type: 'copy-curl'; text: string }
-  | null
+type PendingPrompt = { type: 'copy-curl'; text: string } | null
 
 let pendingPrompt: PendingPrompt = null
 
 function curlCommand(_args: string[], term: Xterm.Terminal) {
   term.writeln('')
-  term.writeln(`${ANSI.fg.dim}Use this to call the endpoint and get JSON back (instead of HTML).${ANSI.reset}`)
-  term.writeln(`${ANSI.fg.dim}Replace the ${ANSI.bold}...${ANSI.reset}${ANSI.fg.dim} values with real Signature headers.${ANSI.reset}`)
+  term.writeln(
+    `${ANSI.fg.dim}Use this to call the endpoint and get JSON back (instead of HTML).${ANSI.reset}`
+  )
+  term.writeln(
+    `${ANSI.fg.dim}Replace the ${ANSI.bold}...${ANSI.reset}${ANSI.fg.dim} values with real Signature headers.${ANSI.reset}`
+  )
   term.writeln('')
   term.writeln(CURL_CMD)
   term.writeln('')

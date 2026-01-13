@@ -28,23 +28,26 @@ Frontend for the wba-quickstart - to handle Web Bot Authentication
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Setup
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/fingerprintjs/wba-verify.git
 cd wba-verify
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -64,11 +67,13 @@ The site will be available at `http://localhost:4321/`
 #### Option 1: Deploy via Vercel CLI
 
 1. Install Vercel CLI:
+
 ```bash
 npm i -g vercel
 ```
 
 2. Deploy:
+
 ```bash
 vercel
 ```
@@ -95,7 +100,7 @@ Create `.svelte` files in `src/components/` using Svelte 5's modern runes syntax
 ```svelte
 <script lang="ts">
   let count = $state(0);
-  
+
   function increment() {
     count += 1;
   }
@@ -112,7 +117,7 @@ Use in Astro pages with the `client:load` directive for interactivity:
 
 ```astro
 ---
-import MyComponent from '../components/MyComponent.svelte';
+import MyComponent from '../components/MyComponent.svelte'
 ---
 
 <MyComponent client:load />
