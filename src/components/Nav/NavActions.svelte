@@ -3,10 +3,10 @@
   import { isMuted } from '../../stores/audio.ts'
 
   // xterm.js terminal should be focused after button clicks
-  import { focusXterm } from '../xterm.client.ts'
+  import {CURL_ENDPOINT_URL, focusXterm} from '../xterm.client.ts'
 
   function handleRetry() {
-    verification.run()
+    verification.run(CURL_ENDPOINT_URL)
     focusXterm()
   }
 

@@ -5,11 +5,17 @@ type testError = {
 }
 
 export async function runTest(baseUrl?: string) {
-  const url = baseUrl ? `${baseUrl}/api/mock.json` : '/api/mock.json' // fallback for client-side
+  const url = baseUrl ? baseUrl : '/api/mock.json' // fallback for client-side
 
-  const [res] = await Promise.all([fetch(url), delay(800)])
-
-  if (!res.ok) {
+  const [res] = await Promise.all([
+    fetch(url, {
+      headers: {
+        Accept: 'application/json',
+      },
+    }),
+    delay(800),
+  ])
+  if (!res.status && !res.ok) {
     throw new Error(`HTTP ${res.status}`)
   }
 
