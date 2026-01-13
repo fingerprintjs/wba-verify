@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
-  import { mountXterm } from './xterm.client'
+  import {CURL_ENDPOINT_URL, mountXterm} from './xterm.client'
 
   import { spinnerEl, type Spinner } from './spinner'
 
@@ -71,7 +71,7 @@
 
   onMount(() => {
     spinner = spinnerEl(bootLoader, 'VERIFYING BOT...')
-    verification.run()
+    verification.run(CURL_ENDPOINT_URL)
 
     updateEightiesDate()
 

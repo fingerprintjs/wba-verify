@@ -8,6 +8,8 @@ import { isMuted } from '../stores/audio.ts'
 import { varValue } from '../utils/cssVar.ts'
 import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
 
+export const CURL_ENDPOINT_URL = 'https://wba-quickstart.vercel.app/api/verify'
+
 // ANSI colors
 const ANSI = {
   reset: '\x1b[0m',
@@ -47,7 +49,13 @@ const commands: Record<string, CommandSpec> = {
     description: 'Clear the terminal',
     handler: (_args, term) => {
       term.clear()
+      renderIntro(term)
     },
+  },
+  curl: {
+    category: 'commands',
+    description: 'Show curl example and optionally copy it',
+    handler: curlCommand,
   },
   docs: {
     category: 'info',
@@ -98,6 +106,48 @@ function helpCommand(_args: string[], term: Xterm.Terminal) {
   }
 }
 
+function renderIntro(term: Xterm.Terminal) {
+  term.write(intro)
+}
+
+const CURL_CMD = `curl -H "Accept: application/json" \\
+     -H "Signature: sig1=..." \\
+     -H "Signature-Input: sig1=..." \\
+     -H "Signature-Agent: https://chatgpt.com" \\
+     ${CURL_ENDPOINT_URL}`
+
+function curlCommand(_args: string[], term: Xterm.Terminal) {
+  term.writeln('')
+  term.writeln(`${ANSI.fg.dim}Use this to call the endpoint and get JSON back (instead of HTML).${ANSI.reset}`)
+  term.writeln(
+    `${ANSI.fg.dim}Replace the ${ANSI.bold}...${ANSI.reset}${ANSI.fg.dim} values with real Signature headers.${ANSI.reset}`
+  )
+  term.writeln('')
+  term.writeln(CURL_CMD)
+  term.writeln('')
+
+  const confirm = createConfirmPrompt({
+    question: 'Copy to clipboard [Y]/n: ',
+    defaultYes: true,
+    onYes: async (t) => {
+      try {
+        await navigator.clipboard.writeText(CURL_CMD)
+        t.write(`\r\n${ANSI.fg.blue} ✅ Copied to clipboard.${ANSI.reset}`)
+      } catch {
+        t.write(`\r\n${ANSI.fg.red} ❌ Failed to copy to clipboard.${ANSI.reset}`)
+      }
+      t.write(`\r\n\r\n${PROMPT}`)
+    },
+    onNo: (t) => {
+      t.write(`\r\n${ANSI.fg.dim}Ok, not copied.${ANSI.reset}`)
+      t.write(`\r\n\r\n${PROMPT}`)
+    },
+  })
+
+  confirm.ask(term)
+  nextLineHandler = confirm.onLine
+}
+
 async function copyCommand(_args: string[], term: Xterm.Terminal) {
   const v = verification.get(verification)
 
@@ -124,15 +174,53 @@ function docsCommand(_args: string[], term: Xterm.Terminal) {
 
 async function retryCommand(_args: string[], term: Xterm.Terminal) {
   // Trigger the WBAV test. xterm is updated via store subscription.
-  await verification.run()
+  await verification.run(CURL_ENDPOINT_URL)
 }
 
 // Dispatcher
 let isBusy = false
 const PROMPT = '$ '
 
+type NextLineHandler = (line: string, term: Xterm.Terminal) => Promise<void> | void
+
+let nextLineHandler: NextLineHandler | null = null
+
+type ConfirmPrompt = {
+  question: string
+  defaultYes?: boolean
+  onYes: (term: Xterm.Terminal) => Promise<void> | void
+  onNo: (term: Xterm.Terminal) => Promise<void> | void
+}
+
+function createConfirmPrompt(cfg: ConfirmPrompt) {
+  const defaultYes = cfg.defaultYes ?? true
+
+  return {
+    ask(term: Xterm.Terminal) {
+      term.write(cfg.question)
+    },
+    async onLine(line: string, term: Xterm.Terminal) {
+      const answer = line.trim().toLowerCase()
+      const isYes = answer === 'y' || answer === 'yes' || (defaultYes && answer === '')
+
+      if (isYes) {
+        await cfg.onYes(term)
+      } else {
+        await cfg.onNo(term)
+      }
+    },
+  }
+}
+
 async function dispatchCommand(input: string, term: Xterm.Terminal): Promise<void> {
   const trimmed = input.trim()
+
+  if (nextLineHandler) {
+    const handler = nextLineHandler
+    nextLineHandler = null
+    await handler(input, term)
+    return
+  }
 
   if (!trimmed) {
     term.write(`\r\n${PROMPT}`)
@@ -206,7 +294,7 @@ export function mountXterm(el: HTMLElement) {
   requestAnimationFrame(() => fit.fit())
 
   // Write the intro text
-  t.write(intro)
+  renderIntro(t)
 
   // SFX
   const writeSound = new Audio(WriteSoundUrl)
