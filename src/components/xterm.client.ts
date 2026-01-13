@@ -118,12 +118,11 @@ function renderIntro(term: Terminal) {
   term.write(intro)
 }
 
-const CURL_CMD =
-  'curl -H "Accept: application/json" \\\r\n' +
-  '     -H "Signature: sig1=..." \\\r\n' +
-  '     -H "Signature-Input: sig1=..." \\\r\n' +
-  '     -H "Signature-Agent: https://chatgpt.com" \\\r\n' +
-  '     https://wba-quickstart.vercel.app'
+const CURL_CMD = `curl -H "Accept: application/json" \\
+     -H "Signature: sig1=..." \\
+     -H "Signature-Input: sig1=..." \\
+     -H "Signature-Agent: https://chatgpt.com" \\
+     https://wba-quickstart.vercel.app`
 
 type PendingPrompt = { type: 'copy-curl'; text: string } | null
 
@@ -189,7 +188,7 @@ async function dispatchCommand(input: string, term: Xterm.Terminal): Promise<voi
         await navigator.clipboard.writeText(pendingPrompt.text)
         term.write(`\r\n${ANSI.fg.blue}✅ Copied to clipboard.${ANSI.reset}`)
       } catch {
-        term.write(`\r\n${ANSI.fg.red}❌ Copy failed (browser blocked clipboard).${ANSI.reset}`)
+        term.write(`\r\n${ANSI.fg.red}❌ Failed to copy to clipboard.${ANSI.reset}`)
       }
     } else {
       term.write(`\r\n${ANSI.fg.dim}Ok, not copied.${ANSI.reset}`)
