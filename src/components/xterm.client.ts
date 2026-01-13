@@ -7,6 +7,7 @@ import { verification, type VerificationState } from '../stores/verification.ts'
 import { isMuted } from '../stores/audio.ts'
 import { varValue } from '../utils/cssVar.ts'
 import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
+import type {Terminal} from "@xterm/xterm";
 
 // ANSI colors
 const ANSI = {
@@ -46,8 +47,14 @@ const commands: Record<string, CommandSpec> = {
     category: 'commands',
     description: 'Clear the terminal',
     handler: (_args, term) => {
-      term.clear()
+      term.clear();
+      renderIntro(term);
     },
+  },
+  curl: {
+    category: 'commands',
+    description: 'Show curl example and optionally copy it',
+    handler: curlCommand,
   },
   docs: {
     category: 'info',
@@ -96,6 +103,39 @@ function helpCommand(_args: string[], term: Xterm.Terminal) {
       )
     }
   }
+  // Extra callouts so users discover key commands
+  term.write(`\r\n${ANSI.bold}${ANSI.fg.dim}Examples${ANSI.reset}\r\n`)
+  term.write(
+    `  ${ANSI.bold}curl${ANSI.reset}     ${ANSI.fg.dim}: Show an API curl example and optionally copy it${ANSI.reset}\r\n`
+  )
+}
+
+function renderIntro(term: Terminal){
+    term.write(intro);
+}
+
+const CURL_CMD =
+  'curl -H "Accept: application/json" \\\r\n' +
+  '     -H "Signature: sig1=..." \\\r\n' +
+  '     -H "Signature-Input: sig1=..." \\\r\n' +
+  '     -H "Signature-Agent: https://chatgpt.com" \\\r\n' +
+  '     https://wba-quickstart.vercel.app'
+
+type PendingPrompt =
+  | { type: 'copy-curl'; text: string }
+  | null
+
+let pendingPrompt: PendingPrompt = null
+
+function curlCommand(_args: string[], term: Xterm.Terminal) {
+  term.writeln('')
+  term.writeln(`${ANSI.fg.dim}Use this to call the endpoint and get JSON back (instead of HTML).${ANSI.reset}`)
+  term.writeln(`${ANSI.fg.dim}Replace the ${ANSI.bold}...${ANSI.reset}${ANSI.fg.dim} values with real Signature headers.${ANSI.reset}`)
+  term.writeln('')
+  term.writeln(CURL_CMD)
+  term.writeln('')
+  term.write('Copy to clipboard [Y]/n: ')
+  pendingPrompt = { type: 'copy-curl', text: CURL_CMD }
 }
 
 async function copyCommand(_args: string[], term: Xterm.Terminal) {
@@ -133,6 +173,26 @@ const PROMPT = '$ '
 
 async function dispatchCommand(input: string, term: Xterm.Terminal): Promise<void> {
   const trimmed = input.trim()
+
+  if (pendingPrompt) {
+    const answer = trimmed.toLowerCase()
+    const shouldCopy = answer === '' || answer === 'y' || answer === 'yes'
+
+    if (shouldCopy) {
+      try {
+        await navigator.clipboard.writeText(pendingPrompt.text)
+        term.write(`\r\n${ANSI.fg.blue}✅ Copied to clipboard.${ANSI.reset}`)
+      } catch {
+        term.write(`\r\n${ANSI.fg.red}❌ Copy failed (browser blocked clipboard).${ANSI.reset}`)
+      }
+    } else {
+      term.write(`\r\n${ANSI.fg.dim}Ok, not copied.${ANSI.reset}`)
+    }
+
+    pendingPrompt = null
+    term.write(`\r\n${PROMPT}`)
+    return
+  }
 
   if (!trimmed) {
     term.write(`\r\n${PROMPT}`)
@@ -206,7 +266,7 @@ export function mountXterm(el: HTMLElement) {
   requestAnimationFrame(() => fit.fit())
 
   // Write the intro text
-  t.write(intro)
+  renderIntro(t)
 
   // SFX
   const writeSound = new Audio(WriteSoundUrl)
