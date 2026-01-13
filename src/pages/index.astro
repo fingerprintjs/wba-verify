@@ -11,21 +11,20 @@ import '../styles/global.css'
 <Layout>
   <Nav />
   <main>
-    <h1 class="sr-only">Web Bot Authentication Verification</h1>
+    <h1 class='sr-only'>Web Bot Authentication Verification</h1>
     <Terminal client:load />
-    <div id="logo">
+    <div id='logo'>
       <hr />
-      <img src={FingerprintLogo.src} width="128" alt="Fingerprint Logo" class="flex" />
+      <img src={FingerprintLogo.src} width='128' alt='Fingerprint Logo' class='flex' />
     </div>
   </main>
   <!-- Background texture -->
-  <svg id="texture" aria-hidden="true">
-    <filter id="noise">
-      <feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" stitchTiles="stitch"
-      ></feTurbulence>
-      <feColorMatrix type="saturate" values="0"></feColorMatrix>
+  <svg id='texture' aria-hidden='true'>
+    <filter id='noise'>
+      <feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'></feTurbulence>
+      <feColorMatrix type='saturate' values='0'></feColorMatrix>
     </filter>
-    <rect width="100%" height="100%" filter="url(#noise)"></rect>
+    <rect width='100%' height='100%' filter='url(#noise)'></rect>
   </svg>
 </Layout>
 

@@ -93,14 +93,10 @@ const commands: Record<string, CommandSpec> = {
 // Command handlers
 function helpCommand(_args: string[], term: Xterm.Terminal) {
   for (const category of ['info', 'commands'] as const) {
-    const entries = Object.entries(commands).filter(
-      ([, spec]) => spec.category === category && !spec.isHidden
-    )
+    const entries = Object.entries(commands).filter(([, spec]) => spec.category === category && !spec.isHidden)
     if (!entries.length) continue
 
-    term.write(
-      `${ANSI.bold}${ANSI.fg.dim}${category.charAt(0).toUpperCase() + category.slice(1)}${ANSI.reset}\r\n`
-    )
+    term.write(`${ANSI.bold}${ANSI.fg.dim}${category.charAt(0).toUpperCase() + category.slice(1)}${ANSI.reset}\r\n`)
     for (const [i, [name, spec]] of entries.entries()) {
       term.write(
         `  ${name.padEnd(8)} ${ANSI.fg.dim}: ${spec.description}${ANSI.reset}\r${i === entries.length - 1 ? '' : '\n'}`
@@ -130,9 +126,7 @@ let pendingPrompt: PendingPrompt = null
 
 function curlCommand(_args: string[], term: Xterm.Terminal) {
   term.writeln('')
-  term.writeln(
-    `${ANSI.fg.dim}Use this to call the endpoint and get JSON back (instead of HTML).${ANSI.reset}`
-  )
+  term.writeln(`${ANSI.fg.dim}Use this to call the endpoint and get JSON back (instead of HTML).${ANSI.reset}`)
   term.writeln(
     `${ANSI.fg.dim}Replace the ${ANSI.bold}...${ANSI.reset}${ANSI.fg.dim} values with real Signature headers.${ANSI.reset}`
   )
