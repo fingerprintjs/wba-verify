@@ -1,0 +1,74 @@
+---
+import NavActions from './NavActions.svelte'
+---
+
+<nav class='navbar'>
+  <ul class='navbar-nav mr-auto'>
+    <li><a href='/'>Fingerprint.com</a></li>
+    <li><a href='/'>GitHub</a></li>
+    <li class='hidden md:inline'><a href='/'>Docs</a></li>
+    <li><a href='/'>Submit&nbsp;<span class='hidden md:inline'>your&nbsp;</span>bot</a></li>
+  </ul>
+  <!-- interactive island -->
+  <NavActions client:load />
+</nav>
+
+<style>
+  .navbar {
+    position: fixed;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    padding: 0 calc(var(--bezel) + 12px);
+  }
+
+  .navbar-nav {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    gap: 2px;
+  }
+
+  li:focus-within {
+    z-index: 1;
+  }
+
+  li:first-of-type a {
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+  }
+  li:last-of-type a {
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+  }
+
+  li:first-of-type .btn {
+    border-radius: 2px 0 0 2px;
+  }
+  li:last-of-type .btn {
+    border-radius: 0 2px 2px 0;
+  }
+
+  a {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0 6px;
+    width: fit-content;
+    height: 24px;
+
+    background-color: hsl(var(--color-gray-3));
+
+    color: hsl(var(--color-gray-10));
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  a:hover {
+    background-color: hsl(var(--color-gray-4));
+  }
+</style>
