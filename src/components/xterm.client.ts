@@ -7,7 +7,8 @@ import { verification, type VerificationState } from '../stores/verification.ts'
 import { isMuted } from '../stores/audio.ts'
 import { varValue } from '../utils/cssVar.ts'
 import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
-import type { Terminal } from '@xterm/xterm'
+
+const CURL_ENDPOINT_URL = 'https://wba-quickstart.vercel.app'
 
 // ANSI colors
 const ANSI = {
@@ -105,7 +106,7 @@ function helpCommand(_args: string[], term: Xterm.Terminal) {
   }
 }
 
-function renderIntro(term: Terminal) {
+function renderIntro(term: Xterm.Terminal) {
   term.write(intro)
 }
 
@@ -113,7 +114,7 @@ const CURL_CMD = `curl -H "Accept: application/json" \\
      -H "Signature: sig1=..." \\
      -H "Signature-Input: sig1=..." \\
      -H "Signature-Agent: https://chatgpt.com" \\
-     https://wba-quickstart.vercel.app`
+     ${CURL_ENDPOINT_URL}`
 
 function curlCommand(_args: string[], term: Xterm.Terminal) {
   term.writeln('')
