@@ -103,11 +103,6 @@ function helpCommand(_args: string[], term: Xterm.Terminal) {
       )
     }
   }
-  // Extra callouts so users discover key commands
-  term.write(`\r\n${ANSI.bold}${ANSI.fg.dim}Examples${ANSI.reset}\r\n`)
-  term.write(
-    `  ${ANSI.bold}curl${ANSI.reset}     ${ANSI.fg.dim}: Show an API curl example and optionally copy it${ANSI.reset}\r\n`
-  )
 }
 
 function renderIntro(term: Terminal) {
@@ -120,10 +115,6 @@ const CURL_CMD = `curl -H "Accept: application/json" \\
      -H "Signature-Agent: https://chatgpt.com" \\
      https://wba-quickstart.vercel.app`
 
-type PendingPrompt = { type: 'copy-curl'; text: string } | null
-
-let pendingPrompt: PendingPrompt = null
-
 function curlCommand(_args: string[], term: Xterm.Terminal) {
   term.writeln('')
   term.writeln(`${ANSI.fg.dim}Use this to call the endpoint and get JSON back (instead of HTML).${ANSI.reset}`)
@@ -133,8 +124,27 @@ function curlCommand(_args: string[], term: Xterm.Terminal) {
   term.writeln('')
   term.writeln(CURL_CMD)
   term.writeln('')
-  term.write('Copy to clipboard [Y]/n: ')
-  pendingPrompt = { type: 'copy-curl', text: CURL_CMD }
+
+  const confirm = createConfirmPrompt({
+    question: 'Copy to clipboard [Y]/n: ',
+    defaultYes: true,
+    onYes: async (t) => {
+      try {
+        await navigator.clipboard.writeText(CURL_CMD)
+        t.write(`\r\n${ANSI.fg.blue} ✅ Copied to clipboard.${ANSI.reset}`)
+      } catch {
+        t.write(`\r\n${ANSI.fg.red} ❌ Failed to copy to clipboard.${ANSI.reset}`)
+      }
+      t.write(`\r\n\r\n${PROMPT}`)
+    },
+    onNo: (t) => {
+      t.write(`\r\n${ANSI.fg.dim}Ok, not copied.${ANSI.reset}`)
+      t.write(`\r\n\r\n${PROMPT}`)
+    },
+  })
+
+  confirm.ask(term)
+  nextLineHandler = confirm.onLine
 }
 
 async function copyCommand(_args: string[], term: Xterm.Terminal) {
@@ -170,26 +180,44 @@ async function retryCommand(_args: string[], term: Xterm.Terminal) {
 let isBusy = false
 const PROMPT = '$ '
 
+type NextLineHandler = (line: string, term: Xterm.Terminal) => Promise<void> | void
+
+let nextLineHandler: NextLineHandler | null = null
+
+type ConfirmPrompt = {
+  question: string
+  defaultYes?: boolean
+  onYes: (term: Xterm.Terminal) => Promise<void> | void
+  onNo: (term: Xterm.Terminal) => Promise<void> | void
+}
+
+function createConfirmPrompt(cfg: ConfirmPrompt) {
+  const defaultYes = cfg.defaultYes ?? true
+
+  return {
+    ask(term: Xterm.Terminal) {
+      term.write(cfg.question)
+    },
+    async onLine(line: string, term: Xterm.Terminal) {
+      const answer = line.trim().toLowerCase()
+      const isYes = answer === 'y' || answer === 'yes' || (defaultYes && answer === '')
+
+      if (isYes) {
+        await cfg.onYes(term)
+      } else {
+        await cfg.onNo(term)
+      }
+    },
+  }
+}
+
 async function dispatchCommand(input: string, term: Xterm.Terminal): Promise<void> {
   const trimmed = input.trim()
 
-  if (pendingPrompt) {
-    const answer = trimmed.toLowerCase()
-    const shouldCopy = answer === '' || answer === 'y' || answer === 'yes'
-
-    if (shouldCopy) {
-      try {
-        await navigator.clipboard.writeText(pendingPrompt.text)
-        term.write(`\r\n${ANSI.fg.blue}✅ Copied to clipboard.${ANSI.reset}`)
-      } catch {
-        term.write(`\r\n${ANSI.fg.red}❌ Failed to copy to clipboard.${ANSI.reset}`)
-      }
-    } else {
-      term.write(`\r\n${ANSI.fg.dim}Ok, not copied.${ANSI.reset}`)
-    }
-
-    pendingPrompt = null
-    term.write(`\r\n${PROMPT}`)
+  if (nextLineHandler) {
+    const handler = nextLineHandler
+    nextLineHandler = null
+    await handler(input, term)
     return
   }
 
