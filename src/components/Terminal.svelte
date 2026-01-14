@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
-  import {CURL_ENDPOINT_URL, mountXterm} from './xterm.client'
+  import { CURL_ENDPOINT_URL, mountXterm } from './xterm.client'
 
   import { spinnerEl, type Spinner } from './spinner'
 
@@ -52,7 +52,7 @@
   // Clock
   let eightiesDate = new Date()
 
-  function updateEightiesDate() {
+  function calculateEightiesDate() {
     const now = new Date()
     const eightiesYear = 1980 + (now.getFullYear() % 10)
 
@@ -72,15 +72,7 @@
   onMount(() => {
     spinner = spinnerEl(bootLoader, 'VERIFYING BOT...')
     verification.run(CURL_ENDPOINT_URL)
-
-    updateEightiesDate()
-
-    // Tick the clock every second
-    const clockInterval = setInterval(() => {
-      updateEightiesDate()
-    }, 1000)
-
-    return () => clearInterval(clockInterval)
+    calculateEightiesDate()
   })
 
   onDestroy(() => {
@@ -126,7 +118,6 @@
                 <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
                 <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
                 <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
-                <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
               </div>
             </div>
           </div>
@@ -164,13 +155,11 @@
           <li><pre>[c] Copy Response</pre></li>
           <li class="hidden md:inline"><pre>[r] Retry</pre></li>
           <li><pre>[help] List Commands</pre></li>
-          <li class="hidden md:inline ml-auto"><pre>{eightiesDate.toISOString()}</pre></li>
+          <li class="hidden md:inline ml-auto"><pre>{eightiesDate.toDateString()}</pre></li>
         </ul>
       {/if}
     </div>
   </div>
-  <!-- CRT refreshline effect -->
-  <div class="terminal__refreshline" aria-hidden="true"></div>
   <!-- Static effect -->
   <div class="static" aria-hidden="true"></div>
 </div>
@@ -191,15 +180,18 @@
     box-shadow: 0 1px 0 white;
   }
 
-  .terminal::before {
+  .terminal__inner::after {
     content: '';
     position: absolute;
-    z-index: 1;
-    inset: var(--padding);
-    background-image: radial-gradient(var(--terminal__inner-bg) 80%, transparent);
+    inset: 0;
+    background-image:
+      radial-gradient(var(--terminal__inner-bg) 80%, transparent),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.04) 2px, transparent 0);
     border: 0.5px solid rgba(255, 255, 255, 0.1);
-    border-radius: calc(var(--border-radius) - var(--padding));
     pointer-events: none;
+    background-size:
+      100%,
+      100% 4px;
   }
 
   /* TERMINAL SCREEN */
@@ -208,12 +200,10 @@
     overflow: hidden;
     height: 100%;
     padding: 8px 12px;
-    background-color: black;
     border-radius: calc(var(--border-radius) - var(--padding));
     box-shadow:
       inset 0px -1px 4px rgba(255, 255, 255, 0.25),
       inset 0px 1px 4px rgba(255, 255, 255, 0.25);
-    filter: blur(0.25px);
   }
 
   .terminal__content {
@@ -343,51 +333,8 @@
     margin: 0;
   }
 
-  /*
-  CRT REFRESH LINE
-  This refresh line element must be a direct child of .terminal so translateY does not cause scrolling
-  and use a psuedo-element so we can pad it inside the terminal border
-  */
-  .terminal__refreshline {
-    position: absolute;
-    inset: var(--padding);
-    overflow: hidden;
-    pointer-events: none;
-    border-radius: calc(var(--border-radius) - var(--padding));
-  }
-
-  .terminal__refreshline::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.1;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      var(--terminal-text-shadow) 50%,
-      var(--terminal__scanline-bg) 50%,
-      transparent 100%
-    );
-    animation: refreshline 4s linear infinite;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .terminal__refreshline {
-      display: none;
-    }
-  }
-
-  @keyframes refreshline {
-    from {
-      transform: translateY(-100%);
-    }
-    to {
-      transform: translateY(100%);
-    }
-  }
-
   /* CRT SCANLINES */
-  .terminal::after {
+  /* .terminal::after {
     content: '';
     position: absolute;
     z-index: 2;
@@ -397,7 +344,7 @@
     background-size: 100% 4px;
     animation: scanlines 0.5s linear 0s infinite normal none running;
     pointer-events: none;
-  }
+  } */
 
   @keyframes scanlines {
     0% {
@@ -428,6 +375,14 @@
     text-shadow: 0 0px 6px var(--terminal-text-shadow);
   }
 
+  /*
+  LOW-RES EFFECT
+  Target direct children instead of entire terminal to save on GPU memory
+  */
+  .terminal__content > * {
+    filter: blur(0.25px);
+  }
+
   /* STATIC EFFECT */
 
   .static {
@@ -435,7 +390,7 @@
     inset: var(--padding);
     z-index: 1;
     pointer-events: none;
-    opacity: 0.1;
+    opacity: 0.15;
     background-image: url('../assets/images/static.jpg');
     background-size: 10vw;
     border-radius: calc(var(--border-radius) - var(--padding));
@@ -491,6 +446,7 @@
   /* XTERM */
   #xterm {
     min-height: 0;
+    height: 100%;
   }
 
   /*
