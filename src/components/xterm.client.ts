@@ -8,7 +8,7 @@ import { isMuted } from '../stores/audio.ts'
 import { varValue } from '../utils/cssVar.ts'
 import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
 
-export const CURL_ENDPOINT_URL = 'https://wba-quickstart.vercel.app/api/verify'
+export const CURL_ENDPOINT_URL = 'https://webbotauth-api.fpjs.io/api/verify'
 
 // ANSI colors
 const ANSI = {
@@ -172,8 +172,7 @@ function docsCommand(_args: string[], term: Xterm.Terminal) {
   term.writeln('\x1b[2mOpened docs in a new tab\x1b[0m')
 }
 
-async function retryCommand(_args: string[], term: Xterm.Terminal) {
-  // Trigger the WBAV test. xterm is updated via store subscription.
+async function retryCommand(_args: string[]) {
   await verification.run(CURL_ENDPOINT_URL)
 }
 
