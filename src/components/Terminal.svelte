@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
-  import { CURL_ENDPOINT_URL, mountXterm, unmountXterm } from './xterm.client'
+  import { CURL_ENDPOINT_URL, mountXterm } from './xterm.client'
 
   import { spinnerEl, type Spinner } from './spinner'
 
@@ -77,7 +77,6 @@
 
   onDestroy(() => {
     spinner?.stop()
-    unmountXterm()
   })
 </script>
 
