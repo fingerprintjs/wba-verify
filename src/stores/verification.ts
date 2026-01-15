@@ -78,8 +78,7 @@ function createVerification() {
         })
       } else {
         const errors = result.errors
-
-        const errorText = Array.isArray(errors) ? errors.map(formatWbavError).join('\n') : 'Unknown error'
+        const errorText = errors.map(formatWbavError).join('\n')
 
         set({
           status: 'error',
