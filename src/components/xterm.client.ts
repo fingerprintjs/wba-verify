@@ -137,7 +137,7 @@ function curlCommand(_args: string[], term: Xterm.Terminal) {
   nextLineHandler = confirm.onLine
 }
 
-async function copyCommand(_args: string[], term: Xterm.Terminal) {
+export async function copyCommand(_args: string[], term: Xterm.Terminal) {
   const v = verification.get(verification)
 
   if (!v.raw) {
@@ -429,4 +429,11 @@ export function mountXterm(el: HTMLElement) {
 // Focus helper for external use like clicking a button in navbar
 export function focusXterm() {
   term?.focus()
+}
+
+// Run commands externally like clicking a button in navbar
+export function runTerminalCommand(cmd: string) {
+  if (!term) return
+  term.write(`${ANSI.fg.dim}${cmd}${ANSI.reset}`)
+  dispatchCommand(cmd, term)
 }

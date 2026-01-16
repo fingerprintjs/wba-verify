@@ -1,18 +1,17 @@
 <script lang="ts">
-  import { verification } from '../../stores/verification.ts'
   import { isMuted } from '../../stores/audio.ts'
 
   // xterm.js terminal should be focused after button clicks
-  import {CURL_ENDPOINT_URL, focusXterm} from '../xterm.client.ts'
+  import { focusXterm, runTerminalCommand } from '../xterm.client.ts'
 
   function handleRetry() {
-    verification.run(CURL_ENDPOINT_URL)
+    runTerminalCommand('r')
     focusXterm()
   }
 
   function handleCopy() {
     // copyResponse()
-    console.log('copy')
+    runTerminalCommand('c')
     focusXterm()
   }
 
