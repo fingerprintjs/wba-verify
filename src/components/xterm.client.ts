@@ -289,7 +289,7 @@ async function dispatchCommand(input: string, term: Xterm.Terminal): Promise<voi
 // Terminal setup and mounting
 const intro =
   'To use this tool:\r\n' +
-  `${ANSI.fg.dim}1.${ANSI.reset} Try in ChatGPT Agent mode to see verification working\r\n   or sign your requests programmatically.\r\n` +
+  `${ANSI.fg.dim}1.${ANSI.reset} Have your bot open this URL, like in Agent mode.\r\n` +
   `${ANSI.fg.dim}2.${ANSI.reset} If verification fails, ensure your bot has the required headers.\r\n` +
   `${ANSI.fg.dim}3.${ANSI.reset} Enter ${ANSI.bold}curl${ANSI.reset} for API, ${ANSI.bold}help${ANSI.reset} for commands.\r\n\n`
 
