@@ -24,7 +24,14 @@
 <ul class="navbar-nav navbar-nav--no-js">
   <li>
     <button class="btn btn--primary" onclick={handleCopy}>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        class="hidden md:inline"
+      >
         <path
           fill-rule="evenodd"
           clip-rule="evenodd"
@@ -38,7 +45,14 @@
 
   <li>
     <button class="btn btn--primary-outline rounded-none" onclick={handleRetry}>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        class="hidden md:inline"
+      >
         <path
           fill-rule="evenodd"
           clip-rule="evenodd"
@@ -52,7 +66,14 @@
 
   <li class="hidden md:inline">
     <button class="btn btn--primary-outline" onclick={handleMute}>
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        class="hidden md:inline"
+      >
         <path
           fill-rule="evenodd"
           clip-rule="evenodd"
