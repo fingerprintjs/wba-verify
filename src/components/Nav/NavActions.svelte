@@ -8,9 +8,9 @@
   }
 
   // xterm.js terminal should be focused after button clicks
-  function handleCommand(e: Event, command: string, focusesXterm: boolean = true) {
+  function handleCommand(e: Event, command: string) {
     runTerminalCommand(command)
-    if (focusesXterm && e.type !== 'click') {
+    if (e.type !== 'click') {
       focusXterm()
     }
   }
