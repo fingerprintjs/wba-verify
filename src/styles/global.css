@@ -136,6 +136,10 @@ button {
   cursor: pointer;
 }
 
+.btn svg {
+  margin-right: 6px;
+}
+
 .btn:disabled {
   cursor: not-allowed;
   opacity: 0.5;
