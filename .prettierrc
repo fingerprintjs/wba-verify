@@ -18,5 +18,6 @@
         "bracketSpacing": false
       }
     }
-  ]
+  ],
+  "plugins": ["prettier-plugin-astro"]
 }
