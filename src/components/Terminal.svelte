@@ -102,6 +102,13 @@
         > HTTP Message Signatures </code>
       </pre>
 
+    <!-- If JavaScript is disabled -->
+    <noscript>
+      <pre class="terminal__boot terminal__boot--no-js" style="--i: {figletLines.length + 2}"><span
+          style="color: var(--ansi-dim)">Warning:&nbsp;</span
+        >JavaScript is disabled. Please enable JavaScript to use this tool.<span class="cursor"></span></pre>
+    </noscript>
+
     <!-- Loading text -->
     {#if !hasBooted}
       <pre class="terminal__boot" bind:this={bootLoader}></pre>
@@ -163,6 +170,11 @@
 </div>
 
 <style>
+  .terminal__boot {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
   /* TERMINAL CONTAINER */
   .terminal {
     --padding: 3px;
@@ -461,7 +473,8 @@
   }
 
   /* ANIMATIONS */
-  .figlet__line {
+  .figlet__line,
+  .terminal__boot--no-js {
     opacity: 0;
     animation: flicker 100ms var(--ease-flicker) forwards;
     animation-delay: calc(25ms * var(--i));
@@ -500,6 +513,18 @@
   ::selection {
     background: var(--terminal-selection-bg);
     color: var(--terminal-selection-color);
+  }
+
+  .cursor {
+    display: inline-block;
+    margin-bottom: -3px;
+    width: 8px;
+    height: 18px;
+    animation: blink 1s step-start 0s infinite;
+    background: currentColor;
+    box-shadow:
+      inset 0 0 1px 0 currentColor,
+      0 0 1px 0 currentColor;
   }
 
   /* RESPONSIVE */
