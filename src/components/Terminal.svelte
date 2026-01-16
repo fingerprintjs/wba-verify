@@ -50,14 +50,18 @@
     : "// No response. Type 'r' in the CLI to run the test."
 
   // Clock
-  let eightiesDate = new Date()
+  let date = ''
 
   function calculateEightiesDate() {
     const now = new Date()
     const eightiesYear = 1980 + (now.getFullYear() % 10)
 
-    now.setFullYear(eightiesYear)
-    eightiesDate = now
+    date =
+      now.toLocaleDateString(undefined, {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+      }) + ` ${eightiesYear}`
   }
 
   // Lifecycle
@@ -161,7 +165,7 @@
         <li><pre>[c] Copy Response</pre></li>
         <li class="hidden md:inline"><pre>[r] Retry</pre></li>
         <li><pre>[help] List Commands</pre></li>
-        <li class="hidden md:inline ml-auto"><pre>{eightiesDate.toDateString()}</pre></li>
+        <li class="hidden md:inline ml-auto"><pre>{date}</pre></li>
       </ul>
     {/if}
   </div>
