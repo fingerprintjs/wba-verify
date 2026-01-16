@@ -9,5 +9,15 @@
   "bracketSpacing": true,
   "bracketSameLine": false,
   "arrowParens": "always",
+  "overrides": [
+    {
+      "files": "*.mdx",
+      "options": {
+        "proseWrap": "always",
+        "printWidth": 75,
+        "bracketSpacing": false
+      }
+    }
+  ],
   "plugins": ["prettier-plugin-astro"]
 }

@@ -1,14 +1,14 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
-  import {CURL_ENDPOINT_URL, mountXterm} from './xterm.client'
+  import { CURL_ENDPOINT_URL, mountXterm } from './xterm.client'
 
   import { spinnerEl, type Spinner } from './spinner'
 
   // Figlet banner
   const FIGLET =
     '██╗    ██╗██████╗  █████╗ ██╗   ██╗\n██║    ██║██╔══██╗██╔══██╗██║   ██║\n██║ █╗ ██║██████╔╝███████║██║   ██║\n██║███╗██║██╔══██╗██╔══██║╚██╗ ██╔╝\n╚███╔███╔╝██████╔╝██║  ██║ ╚████╔╝ \n ╚══╝╚══╝ ╚═════╝ ╚═╝  ╚═╝  ╚═══╝  \n WEB BOT AUTH VERIFICATION v0.0.1'
-  const filgetLines = FIGLET.split('\n').map((line) => (line.length === 0 ? '\u00A0' : line))
+  const figletLines = FIGLET.split('\n').map((line) => (line.length === 0 ? '\u00A0' : line))
 
   // Create loading spinner and xterm.js terminal
   let bootLoader: HTMLElement
@@ -23,12 +23,12 @@
   }
 
   // Status text
-  type statusText = [string, string]
+  type StatusText = [string, string]
 
-  let lastStatusText: statusText | null = null
+  let lastStatusText: StatusText | null = null
 
   $: statusText = (() => {
-    const next: statusText | null =
+    const next: StatusText | null =
       $verification.status === 'success'
         ? ['Verification Successful', 'Your bot is signed']
         : $verification.status === 'error'
@@ -52,7 +52,7 @@
   // Clock
   let eightiesDate = new Date()
 
-  function updateEightiesDate() {
+  function calculateEightiesDate() {
     const now = new Date()
     const eightiesYear = 1980 + (now.getFullYear() % 10)
 
@@ -72,15 +72,7 @@
   onMount(() => {
     spinner = spinnerEl(bootLoader, 'VERIFYING BOT...')
     verification.run(CURL_ENDPOINT_URL)
-
-    updateEightiesDate()
-
-    // Tick the clock every second
-    const clockInterval = setInterval(() => {
-      updateEightiesDate()
-    }, 1000)
-
-    return () => clearInterval(clockInterval)
+    calculateEightiesDate()
   })
 
   onDestroy(() => {
@@ -90,16 +82,15 @@
 
 <div class="terminal">
   <div class="terminal__inner">
-    <div class="terminal__content">
-      <!-- Banner -->
-      <div class="terminal__figlet">
-        {#each filgetLines as line, i}
-          <pre class="figlet__line" style="--i:{i}" aria-hidden="true">{line}</pre>
-        {/each}
-      </div>
+    <!-- Banner -->
+    <div class="terminal__figlet">
+      {#each figletLines as line, i}
+        <pre class="figlet__line" style="--i:{i}" aria-hidden="true">{line}</pre>
+      {/each}
+    </div>
 
-      <!-- Meta details -->
-      <pre class="terminal__meta">
+    <!-- Meta details -->
+    <pre class="terminal__meta">
         <code style="--i:1">WBAV / FINGERPRINTJS INC.</code>
         <code style="--i:2">(c) 1986 </code>
         <code>&nbsp;</code>
@@ -107,75 +98,83 @@
         <code>&nbsp;</code>
         <code style="--i:3">Real cryptographic verification for Web Bot Auth </code>
         <code style="--i:4"
-          >using <a href="https://datatracker.ietf.org/doc/html/rfc9421" target="_blank">RFC 9421</a
-          > HTTP Message Signatures </code>
+        >using <a href="https://datatracker.ietf.org/doc/html/rfc9421" target="_blank">RFC 9421</a
+        > HTTP Message Signatures </code>
       </pre>
 
-      <!-- Loading text -->
-      {#if !hasBooted}
-        <pre bind:this={bootLoader}></pre>
-      {/if}
+    <!-- If JavaScript is disabled -->
+    <noscript>
+      <pre class="terminal__boot terminal__boot--no-js" style="--i: {figletLines.length + 2}"><span
+          style="color: var(--ansi-dim)">Warning:&nbsp;</span
+        >JavaScript is disabled. Please enable JavaScript to use this tool.<span class="cursor"></span></pre>
+    </noscript>
 
-      {#if hasBooted}
-        <!-- Verification status -->
+    <!-- Loading text -->
+    {#if !hasBooted}
+      <pre class="terminal__boot" bind:this={bootLoader}></pre>
+    {/if}
+
+    {#if hasBooted}
+      <!-- Verification status -->
+      {#if $verification.status !== 'idle'}
+        <div class="terminal__status {$verification.status === 'success' ? 'terminal__status--success' : ''}">
+          <div class="terminal__status-inner">
+            <div class="terminal__status-marquee">
+              <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
+              <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
+              <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
+              <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
+            </div>
+          </div>
+        </div>
+      {/if}
+    {/if}
+
+    <!-- API response -->
+    {#if hasBooted}
+      <div class="terminal__response">
+        <!-- Human-readable message -->
+        <div class="terminal__pane terminal__response-human">
+          <pre class="terminal__pane-title">[cli]</pre>
+          <!-- Render xterm on screens larger than 1024px -->
+          <div id="xterm" class="prose" bind:this={xtermEl}></div>
+          <!-- On screens less than 1024px wide, render a simple text and buttons -->
+          <!-- <div class="prose overflow-y-auto overscroll-contain custom-scrollbar lg:hidden">
+              <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{apiText}</pre>
+            </div> -->
+        </div>
+
+        <!-- Bot-friendly raw response -->
         {#if $verification.status !== 'idle'}
-          <div class="terminal__status">
-            <div class="terminal__status-inner">
-              <div class="terminal__status-marquee">
-                <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
-                <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
-                <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
-                <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
-                <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
+          <div class="terminal__pane terminal__response-bot">
+            <div class="terminal__bot-text custom-scrollbar-container">
+              <pre class="terminal__pane-title">[apiResponse]</pre>
+              <div class="prose overflow-y-auto overscroll-contain custom-scrollbar">
+                <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{apiText}</pre>
               </div>
             </div>
           </div>
         {/if}
-      {/if}
-
-      <!-- API response -->
-      {#if hasBooted}
-        <div class="terminal__response">
-          <!-- Human-readable message -->
-          <div class="terminal__pane terminal__response-human">
-            <pre class="terminal__pane-title">[cli]</pre>
-            <!-- Render xterm on screens larger than 1024px -->
-            <div id="xterm" class="prose" bind:this={xtermEl}></div>
-            <!-- On screens less than 1024px wide, render a simple text and buttons -->
-            <!-- <div class="prose overflow-y-auto overscroll-contain custom-scrollbar lg:hidden">
-              <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{apiText}</pre>
-            </div> -->
-          </div>
-
-          <!-- Bot-friendly raw response -->
-          {#if $verification.status !== 'idle'}
-            <div class="terminal__pane terminal__response-bot">
-              <div class="terminal__bot-text custom-scrollbar-container">
-                <pre class="terminal__pane-title">[apiResponse]</pre>
-                <div class="prose overflow-y-auto overscroll-contain custom-scrollbar">
-                  <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{apiText}</pre>
-                </div>
-              </div>
-            </div>
-          {/if}
-        </div>
-        <!-- Terminal commands -->
-        <ul class="terminal__commands">
-          <li><pre>[c] Copy Response</pre></li>
-          <li class="hidden md:inline"><pre>[r] Retry</pre></li>
-          <li><pre>[help] List Commands</pre></li>
-          <li class="hidden md:inline ml-auto"><pre>{eightiesDate.toISOString()}</pre></li>
-        </ul>
-      {/if}
-    </div>
+      </div>
+      <!-- Terminal commands -->
+      <ul class="terminal__commands">
+        <li><pre>[c] Copy Response</pre></li>
+        <li class="hidden md:inline"><pre>[r] Retry</pre></li>
+        <li><pre>[help] List Commands</pre></li>
+        <li class="hidden md:inline ml-auto"><pre>{eightiesDate.toDateString()}</pre></li>
+      </ul>
+    {/if}
   </div>
-  <!-- CRT refreshline effect -->
-  <div class="terminal__refreshline" aria-hidden="true"></div>
   <!-- Static effect -->
   <div class="static" aria-hidden="true"></div>
 </div>
 
 <style>
+  .terminal__boot {
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+
   /* TERMINAL CONTAINER */
   .terminal {
     --padding: 3px;
@@ -191,35 +190,42 @@
     box-shadow: 0 1px 0 white;
   }
 
-  .terminal::before {
+  .terminal__inner::after {
     content: '';
     position: absolute;
-    z-index: 1;
-    inset: var(--padding);
-    background-image: radial-gradient(var(--terminal__inner-bg) 80%, transparent);
+    inset: 0;
+    background-image:
+      radial-gradient(var(--terminal__inner-bg) 80%, transparent),
+      linear-gradient(to bottom, rgb(255 255 255 / 0%), rgb(255 255 255 / 5%) 50%, rgb(0 0 0 / 5%) 70%, rgb(0 0 0 / 5%));
     border: 0.5px solid rgba(255, 255, 255, 0.1);
-    border-radius: calc(var(--border-radius) - var(--padding));
     pointer-events: none;
+    background-size:
+      100%,
+      100% 4px;
+    /* animation: scanlines 1s linear 0s infinite normal none running; */
+  }
+
+  @keyframes scanlines {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(4px);
+    }
   }
 
   /* TERMINAL SCREEN */
   .terminal__inner {
     position: relative;
     overflow: hidden;
-    height: 100%;
-    padding: 8px 12px;
-    background-color: black;
-    border-radius: calc(var(--border-radius) - var(--padding));
-    box-shadow:
-      inset 0px -1px 4px rgba(255, 255, 255, 0.25),
-      inset 0px 1px 4px rgba(255, 255, 255, 0.25);
-    filter: blur(0.25px);
-  }
-
-  .terminal__content {
     display: flex;
     flex-direction: column;
     height: 100%;
+    padding: 8px 12px;
+    border-radius: calc(var(--border-radius) - var(--padding));
+    box-shadow:
+      inset 0px -1px 4px rgba(255, 255, 255, 0.2),
+      inset 0px 1px 4px rgba(255, 255, 255, 0.1);
   }
 
   /* TERMINAL VERIFICATION STATUS */
@@ -229,6 +235,12 @@
     box-shadow:
       inset 0 0 1px 0 var(--ansi-red),
       0 0 1px 0 var(--ansi-red);
+  }
+  .terminal__status--success {
+    border-color: var(--ansi-green);
+    box-shadow:
+      inset 0 0 1px 0 var(--ansi-green),
+      0 0 1px 0 var(--ansi-green);
   }
   .terminal__status-inner {
     display: inherit;
@@ -247,6 +259,10 @@
   .terminal__status-marquee pre {
     color: var(--ansi-red);
     text-shadow: 0 0px 6px var(--ansi-red);
+  }
+  .terminal__status--success .terminal__status-marquee pre {
+    color: var(--ansi-green);
+    text-shadow: 0 0px 6px var(--ansi-green);
   }
 
   /* TERMINAL PANES */
@@ -343,71 +359,6 @@
     margin: 0;
   }
 
-  /*
-  CRT REFRESH LINE
-  This refresh line element must be a direct child of .terminal so translateY does not cause scrolling
-  and use a psuedo-element so we can pad it inside the terminal border
-  */
-  .terminal__refreshline {
-    position: absolute;
-    inset: var(--padding);
-    overflow: hidden;
-    pointer-events: none;
-    border-radius: calc(var(--border-radius) - var(--padding));
-  }
-
-  .terminal__refreshline::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0.1;
-    background: linear-gradient(
-      to bottom,
-      transparent 0%,
-      var(--terminal-text-shadow) 50%,
-      var(--terminal__scanline-bg) 50%,
-      transparent 100%
-    );
-    animation: refreshline 4s linear infinite;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .terminal__refreshline {
-      display: none;
-    }
-  }
-
-  @keyframes refreshline {
-    from {
-      transform: translateY(-100%);
-    }
-    to {
-      transform: translateY(100%);
-    }
-  }
-
-  /* CRT SCANLINES */
-  .terminal::after {
-    content: '';
-    position: absolute;
-    z-index: 2;
-    inset: var(--padding);
-    opacity: 0.05;
-    background: linear-gradient(180deg, #323232 2px, #dcdcdc 0);
-    background-size: 100% 4px;
-    animation: scanlines 0.5s linear 0s infinite normal none running;
-    pointer-events: none;
-  }
-
-  @keyframes scanlines {
-    0% {
-      transform: translateY(0);
-    }
-    100% {
-      transform: translateY(4px);
-    }
-  }
-
   /* VERIFICATION STATUS MARQUEE */
   .terminal__status-marquee pre {
     animation: marquee 30s steps(180) infinite;
@@ -425,7 +376,20 @@
   /* BLOOM EFFECT */
   #xterm,
   pre {
-    text-shadow: 0 0px 6px var(--terminal-text-shadow);
+    text-shadow: 0 0px 6px currentColor;
+  }
+
+  /*
+  LOW-RES EFFECT
+  Target direct children instead of entire terminal to save on GPU memory
+  */
+  .terminal__figlet,
+  .terminal__boot,
+  .terminal__status,
+  .terminal__meta,
+  .terminal__response,
+  .terminal__commands {
+    filter: blur(0.3px);
   }
 
   /* STATIC EFFECT */
@@ -435,13 +399,17 @@
     inset: var(--padding);
     z-index: 1;
     pointer-events: none;
-    opacity: 0.1;
+    opacity: 0.13;
     background-image: url('../assets/images/static.jpg');
-    background-size: 10vw;
+    background-size: 128px 128px;
     border-radius: calc(var(--border-radius) - var(--padding));
-    animation: static 200ms steps(1, start) infinite;
+    animation: static 500ms steps(1) infinite;
   }
 
+  /*
+  Animating `background-position` gives a more random effect compared to `transform`
+  See: https://bfcm.stripe.com/2024
+  */
   @keyframes static {
     0% {
       background-position: 40px 0px;
@@ -490,6 +458,8 @@
 
   /* XTERM */
   #xterm {
+    overflow: hidden;
+    height: 100%;
     min-height: 0;
   }
 
@@ -503,7 +473,8 @@
   }
 
   /* ANIMATIONS */
-  .figlet__line {
+  .figlet__line,
+  .terminal__boot--no-js {
     opacity: 0;
     animation: flicker 100ms var(--ease-flicker) forwards;
     animation-delay: calc(25ms * var(--i));
@@ -542,6 +513,18 @@
   ::selection {
     background: var(--terminal-selection-bg);
     color: var(--terminal-selection-color);
+  }
+
+  .cursor {
+    display: inline-block;
+    margin-bottom: -3px;
+    width: 8px;
+    height: 18px;
+    animation: blink 1s step-start 0s infinite;
+    background: currentColor;
+    box-shadow:
+      inset 0 0 1px 0 currentColor,
+      0 0 1px 0 currentColor;
   }
 
   /* RESPONSIVE */

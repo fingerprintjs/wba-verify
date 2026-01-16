@@ -18,19 +18,11 @@ import '../styles/global.css'
       <img src={FingerprintLogo.src} width='128' alt='Fingerprint Logo' class='flex' />
     </div>
   </main>
-  <!-- Background texture -->
-  <svg id='texture' aria-hidden='true'>
-    <filter id='noise'>
-      <feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'></feTurbulence>
-      <feColorMatrix type='saturate' values='0'></feColorMatrix>
-    </filter>
-    <rect width='100%' height='100%' filter='url(#noise)'></rect>
-  </svg>
 </Layout>
 
 <script>
   console.log(
-    "Hi there, welcome to %cFingerprint WBAV%c. \n\nGitHub:       https://github.com/fingerprintjs/wba-verify \n\n%cWe're hiring: https://fingerprint.com/careers",
+    "Hi there, welcome to %cFingerprint WBAV%c :) \n\nGitHub:       https://github.com/fingerprintjs/wba-verify \n\n%cWe're hiring: https://fingerprint.com/careers",
     'font-weight: bold;',
     'font-weight: normal;',
     'color: #f35b22;'
@@ -73,17 +65,5 @@ import '../styles/global.css'
       transparent 2px,
       transparent 6px
     );
-  }
-
-  #texture {
-    bottom: 0;
-    height: 100%;
-    left: 0;
-    opacity: 0.25;
-    pointer-events: none;
-    position: fixed;
-    width: 100%;
-    z-index: -1;
-    filter: contrast(200%);
   }
 </style>
