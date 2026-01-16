@@ -64,8 +64,13 @@ const commands: Record<string, CommandSpec> = {
   },
   docs: {
     category: 'info',
-    description: 'Open the documentation',
+    description: 'Open docs in a new tab',
     handler: docsCommand,
+  },
+  fp: {
+    category: 'info',
+    description: 'Open fingerprint.com in a new tab',
+    handler: fpCommand,
   },
   help: {
     category: 'info',
@@ -97,42 +102,6 @@ const commands: Record<string, CommandSpec> = {
 }
 
 // Command handlers
-function helpCommand(_args: string[], term: Xterm.Terminal) {
-  const categories = ['info', 'commands']
-
-  for (let i = 0; i < categories.length; i++) {
-    const category = categories[i]
-
-    const entries: [string, (typeof commands)[string]][] = []
-
-    for (const name in commands) {
-      const spec = commands[name]
-      if (spec.category !== category) continue
-      if (spec.isHidden) continue
-      entries.push([name, spec])
-    }
-
-    if (entries.length === 0) continue
-
-    if (i > 0) {
-      term.write('\n')
-    }
-
-    term.write(`${ANSI.bold}${ANSI.fg.dim}${category.charAt(0).toUpperCase() + category.slice(1)}${ANSI.reset}\r\n`)
-
-    for (let j = 0; j < entries.length; j++) {
-      const name = entries[j][0]
-      const spec = entries[j][1]
-
-      term.write(
-        `  ${name.padEnd(8)} ${ANSI.fg.dim}: ${spec.description}${ANSI.reset}\r${
-          i === categories.length - 1 && j === entries.length - 1 ? '' : '\n'
-        }`
-      )
-    }
-  }
-}
-
 const CURL_CMD = `${ANSI.fg.dim}curl -H "Accept: application/json" \\
      -H "Signature: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
      -H "Signature-Input: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
@@ -188,8 +157,49 @@ async function copyCommand(_args: string[], term: Xterm.Terminal) {
 function docsCommand(_args: string[], term: Xterm.Terminal) {
   const url = 'https://docs.fingerprint.com'
   window.open(url, '_blank', 'noopener,noreferrer')
-  term.writeln('')
-  term.writeln('\x1b[2mOpened docs in a new tab\x1b[0m')
+  term.writeln(`${ANSI.fg.dim}Opened docs in a new tab${ANSI.reset}`)
+}
+
+function fpCommand(_args: string[], term: Xterm.Terminal) {
+  const url = 'https://fingerprint.com'
+  window.open(url, '_blank', 'noopener,noreferrer')
+  term.writeln(`${ANSI.fg.dim}Opened fingerprint.com in a new tab${ANSI.reset}`)
+}
+
+function helpCommand(_args: string[], term: Xterm.Terminal) {
+  const categories = ['info', 'commands']
+
+  for (let i = 0; i < categories.length; i++) {
+    const category = categories[i]
+
+    const entries: [string, (typeof commands)[string]][] = []
+
+    for (const name in commands) {
+      const spec = commands[name]
+      if (spec.category !== category) continue
+      if (spec.isHidden) continue
+      entries.push([name, spec])
+    }
+
+    if (entries.length === 0) continue
+
+    if (i > 0) {
+      term.write('\n')
+    }
+
+    term.write(`${ANSI.bold}${ANSI.fg.dim}${category.charAt(0).toUpperCase() + category.slice(1)}${ANSI.reset}\r\n`)
+
+    for (let j = 0; j < entries.length; j++) {
+      const name = entries[j][0]
+      const spec = entries[j][1]
+
+      term.write(
+        `  ${name.padEnd(8)} ${ANSI.fg.dim}: ${spec.description}${ANSI.reset}\r${
+          i === categories.length - 1 && j === entries.length - 1 ? '' : '\n'
+        }`
+      )
+    }
+  }
 }
 
 async function retryCommand(_args: string[]) {
