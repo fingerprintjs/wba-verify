@@ -110,7 +110,7 @@
     {#if hasBooted}
       <!-- Verification status -->
       {#if $verification.status !== 'idle'}
-        <div class="terminal__status">
+        <div class="terminal__status {$verification.status === 'success' ? 'terminal__status--success' : ''}">
           <div class="terminal__status-inner">
             <div class="terminal__status-marquee">
               <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
@@ -224,6 +224,12 @@
       inset 0 0 1px 0 var(--ansi-red),
       0 0 1px 0 var(--ansi-red);
   }
+  .terminal__status--success {
+    border-color: var(--ansi-green);
+    box-shadow:
+      inset 0 0 1px 0 var(--ansi-green),
+      0 0 1px 0 var(--ansi-green);
+  }
   .terminal__status-inner {
     display: inherit;
     overflow-x: hidden;
@@ -241,6 +247,10 @@
   .terminal__status-marquee pre {
     color: var(--ansi-red);
     text-shadow: 0 0px 6px var(--ansi-red);
+  }
+  .terminal__status--success .terminal__status-marquee pre {
+    color: var(--ansi-green);
+    text-shadow: 0 0px 6px var(--ansi-green);
   }
 
   /* TERMINAL PANES */

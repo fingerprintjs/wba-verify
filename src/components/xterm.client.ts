@@ -17,10 +17,11 @@ const ANSI = {
   fg: {
     dim: '\x1b[38;2;166;104;84m',
     gray: '\x1b[90m',
+    green: '\x1b[38;2;89;243;34m',
     blue: '\x1b[38;2;34;213;243m',
     red: '\x1b[38;2;243;34;121m',
     orange: '\x1b[38;2;243;88;32m',
-    white: '\x1b[38;2;255;255;255m',
+    white: '\x1b[38;2;255;221;200m',
   },
   bg: {
     red: '\x1b[48;2;243;34;121m',
@@ -49,7 +50,7 @@ const commands: Record<string, CommandSpec> = {
     description: 'Clear the terminal',
     handler: (_args, term) => {
       term.clear()
-      renderIntro(term)
+      term.write(intro)
     },
   },
   curl: {
@@ -93,54 +94,71 @@ const commands: Record<string, CommandSpec> = {
 
 // Command handlers
 function helpCommand(_args: string[], term: Xterm.Terminal) {
-  for (const category of ['info', 'commands'] as const) {
-    const entries = Object.entries(commands).filter(([, spec]) => spec.category === category && !spec.isHidden)
-    if (!entries.length) continue
+  const categories = ['info', 'commands']
+
+  for (let i = 0; i < categories.length; i++) {
+    const category = categories[i]
+
+    const entries: [string, (typeof commands)[string]][] = []
+
+    for (const name in commands) {
+      const spec = commands[name]
+      if (spec.category !== category) continue
+      if (spec.isHidden) continue
+      entries.push([name, spec])
+    }
+
+    if (entries.length === 0) continue
+
+    if (i > 0) {
+      term.write('\n')
+    }
 
     term.write(`${ANSI.bold}${ANSI.fg.dim}${category.charAt(0).toUpperCase() + category.slice(1)}${ANSI.reset}\r\n`)
-    for (const [i, [name, spec]] of entries.entries()) {
+
+    for (let j = 0; j < entries.length; j++) {
+      const name = entries[j][0]
+      const spec = entries[j][1]
+
       term.write(
-        `  ${name.padEnd(8)} ${ANSI.fg.dim}: ${spec.description}${ANSI.reset}\r${i === entries.length - 1 ? '' : '\n'}`
+        `  ${name.padEnd(8)} ${ANSI.fg.dim}: ${spec.description}${ANSI.reset}\r${
+          i === categories.length - 1 && j === entries.length - 1 ? '' : '\n'
+        }`
       )
     }
   }
 }
 
-function renderIntro(term: Xterm.Terminal) {
-  term.write(intro)
-}
-
-const CURL_CMD = `curl -H "Accept: application/json" \\
-     -H "Signature: sig1=..." \\
-     -H "Signature-Input: sig1=..." \\
+const CURL_CMD = `${ANSI.fg.dim}curl -H "Accept: application/json" \\
+     -H "Signature: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
+     -H "Signature-Input: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
      -H "Signature-Agent: https://chatgpt.com" \\
-     ${CURL_ENDPOINT_URL}`
+     ${CURL_ENDPOINT_URL}${ANSI.reset}`
 
 function curlCommand(_args: string[], term: Xterm.Terminal) {
-  term.writeln('')
-  term.writeln(`${ANSI.fg.dim}Use this to call the endpoint and get JSON back (instead of HTML).${ANSI.reset}`)
+  term.writeln(`Use this to call the endpoint and get JSON back (instead of HTML).`)
   term.writeln(
-    `${ANSI.fg.dim}Replace the ${ANSI.bold}...${ANSI.reset}${ANSI.fg.dim} values with real Signature headers.${ANSI.reset}`
+    `Replace the ${ANSI.fg.dim}...${ANSI.reset} values with real Signature headers.`
   )
   term.writeln('')
   term.writeln(CURL_CMD)
   term.writeln('')
 
   const confirm = createConfirmPrompt({
-    question: 'Copy to clipboard [Y]/n: ',
+    question: 'Copy curl to clipboard',
     defaultYes: true,
     onYes: async (t) => {
       try {
         await navigator.clipboard.writeText(CURL_CMD)
-        t.write(`\r\n${ANSI.fg.blue} ✅ Copied to clipboard.${ANSI.reset}`)
+        t.write(`\r\n${ANSI.fg.green}✓ curl copied to clipboard${ANSI.reset}`)
       } catch {
-        t.write(`\r\n${ANSI.fg.red} ❌ Failed to copy to clipboard.${ANSI.reset}`)
+        t.write(`\r\n${ANSI.fg.red} Failed to copy to clipboard${ANSI.reset}`)
       }
       t.write(`\r\n\r\n${PROMPT}`)
     },
     onNo: (t) => {
       t.write(`\r\n${ANSI.fg.dim}Ok, not copied.${ANSI.reset}`)
-      t.write(`\r\n\r\n${PROMPT}`)
+      t.write(`\r\n${PROMPT}`)
     },
   })
 
@@ -159,7 +177,7 @@ async function copyCommand(_args: string[], term: Xterm.Terminal) {
   }
   try {
     await navigator.clipboard.writeText(JSON.stringify(v.raw, null, 2))
-    term.write(`${ANSI.fg.blue}✓ API response copied to clipboard${ANSI.reset}`)
+    term.write(`${ANSI.fg.green}✓ API response copied to clipboard${ANSI.reset}`)
   } catch (err) {
     term.write(`${ANSI.fg.red}Error:${ANSI.reset} ${(err as Error).message}`)
   }
@@ -196,7 +214,7 @@ function createConfirmPrompt(cfg: ConfirmPrompt) {
 
   return {
     ask(term: Xterm.Terminal) {
-      term.write(cfg.question)
+      term.write(`${ANSI.bold}${ANSI.fg.white}${cfg.question}?${ANSI.reset} ${ANSI.fg.blue}[Y]/n${ANSI.reset}`) // Write the question
     },
     async onLine(line: string, term: Xterm.Terminal) {
       const answer = line.trim().toLowerCase()
@@ -293,7 +311,7 @@ export function mountXterm(el: HTMLElement) {
   requestAnimationFrame(() => fit.fit())
 
   // Write the intro text
-  renderIntro(t)
+  t.write(intro)
 
   // SFX
   const writeSound = new Audio(WriteSoundUrl)
