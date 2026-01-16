@@ -394,6 +394,10 @@
     animation: static 500ms steps(1) infinite;
   }
 
+  /*
+  Animating `background-position` gives a more random effect compared to `transform`
+  See: https://bfcm.stripe.com/2024
+  */
   @keyframes static {
     0% {
       background-position: 40px 0px;

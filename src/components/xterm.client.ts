@@ -3,9 +3,13 @@ import { FitAddon } from '@xterm/addon-fit'
 import '@xterm/xterm/css/xterm.css'
 
 import { spinnerXterm, type Spinner } from './spinner'
+
 import { verification, type VerificationState } from '../stores/verification.ts'
 import { isMuted } from '../stores/audio.ts'
+
 import { varValue } from '../utils/cssVar.ts'
+import { debounce } from '../utils/debounce.ts'
+
 import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
 
 export const CURL_ENDPOINT_URL = 'https://webbotauth-api.fpjs.io/api/verify'
@@ -137,9 +141,7 @@ const CURL_CMD = `${ANSI.fg.dim}curl -H "Accept: application/json" \\
 
 function curlCommand(_args: string[], term: Xterm.Terminal) {
   term.writeln(`Use this to call the endpoint and get JSON back (instead of HTML).`)
-  term.writeln(
-    `Replace the ${ANSI.fg.dim}...${ANSI.reset} values with real Signature headers.`
-  )
+  term.writeln(`Replace the ${ANSI.fg.dim}...${ANSI.reset} values with real Signature headers.`)
   term.writeln('')
   term.writeln(CURL_CMD)
   term.writeln('')
@@ -307,7 +309,35 @@ export function mountXterm(el: HTMLElement) {
   t.loadAddon(fit)
   t.open(el)
 
-  // Initial fit
+  // Attach click and resize listeners
+  const container = document.querySelector('.terminal') as HTMLElement | null
+  if (container) {
+    container.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('.xterm')) return
+
+      requestAnimationFrame(() => {
+        const selection = window.getSelection()
+        if (selection && selection.type === 'Range') return
+        t.focus()
+      })
+
+      const resizeObserver = new ResizeObserver(() => {
+        debouncedFit()
+      })
+      resizeObserver.observe(container)
+    })
+  }
+
+  // Handle terminal resizing and initial fit
+  const debouncedFit = debounce(() => {
+    fit.fit()
+  }, 250)
+
+  if (container) {
+    const resizeObserver = new ResizeObserver(debouncedFit)
+    resizeObserver.observe(container)
+  }
+
   requestAnimationFrame(() => fit.fit())
 
   // Write the intro text
