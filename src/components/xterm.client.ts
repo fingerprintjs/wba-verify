@@ -429,6 +429,6 @@ export function focusXterm() {
 // Run commands externally like clicking a button in navbar
 export function runTerminalCommand(cmd: string) {
   if (!term) return
-  term.write(`${ANSI.fg.dim}${cmd}${ANSI.reset}`)
+  term.write(`\x1b[2K\r${PROMPT}${ANSI.fg.dim}${cmd}${ANSI.reset}`)
   dispatchCommand(cmd, term)
 }

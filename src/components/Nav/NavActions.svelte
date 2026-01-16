@@ -1,29 +1,51 @@
 <script lang="ts">
-  import { isImportTypeAssertionContainer } from 'typescript'
+  import { onMount } from 'svelte'
   import { isMuted } from '../../stores/audio.ts'
   import { focusXterm, runTerminalCommand } from '../xterm.client.ts'
 
-  // xterm.js terminal should be focused after button clicks
-  function handleRetry() {
-    runTerminalCommand('r')
-    focusXterm()
-  }
-
-  function handleCopy() {
-    // copyResponse()
-    runTerminalCommand('c')
-    focusXterm()
-  }
-
   function handleMute() {
     isMuted.update((val) => !val)
-    focusXterm()
   }
+
+  // xterm.js terminal should be focused after button clicks
+  function handleCommand(e: Event, command: string, focusesXterm: boolean = true) {
+    runTerminalCommand(command)
+    if (focusesXterm && e.type !== 'click') {
+      focusXterm()
+    }
+  }
+
+  onMount(() => {
+    const isXtermFocused = () => document.activeElement?.classList.contains('xterm-helper-textarea')
+
+    // Listen for keyboard shortcuts
+    window.addEventListener('keydown', (e) => {
+      // If xterm is focused, do nothing
+      if (isXtermFocused()) {
+        return
+      }
+
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.isComposing) {
+        return
+      }
+
+      if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault()
+        handleCommand(e, 'r')
+      } else if (e.key === 'c' || e.key === 'C') {
+        e.preventDefault()
+        handleCommand(e, 'c')
+      } else if (e.key === 'm' || e.key === 'M') {
+        e.preventDefault()
+        handleMute()
+      }
+    })
+  })
 </script>
 
 <ul class="navbar-nav navbar-nav--no-js">
   <li>
-    <button class="btn btn--primary" onclick={handleCopy}>
+    <button class="btn btn--primary" onclick={(e) => handleCommand(e, 'c')}>
       <svg
         width="12"
         height="12"
@@ -44,7 +66,7 @@
   </li>
 
   <li>
-    <button class="btn btn--primary-outline rounded-none" onclick={handleRetry}>
+    <button class="btn btn--primary-outline rounded-none" onclick={(e) => handleCommand(e, 'r')}>
       <svg
         width="12"
         height="12"
@@ -83,8 +105,8 @@
           fill="currentColor"
         />
       </svg>
-      <span style={$isMuted ? 'text-decoration: line-through' : ''}>Aud</span><span class="hidden md:inline"
-        >&nbsp;[M]</span
+      <span style={$isMuted ? 'text-decoration: line-through; text-decoration-style: dotted;' : ''}>Aud</span><span
+        class="hidden md:inline">&nbsp;[M]</span
       >
     </button>
   </li>
