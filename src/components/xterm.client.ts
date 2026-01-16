@@ -330,11 +330,6 @@ export function mountXterm(el: HTMLElement) {
         if (selection && selection.type === 'Range') return
         t.focus()
       })
-
-      const resizeObserver = new ResizeObserver(() => {
-        debouncedFit()
-      })
-      resizeObserver.observe(container)
     })
   }
 
