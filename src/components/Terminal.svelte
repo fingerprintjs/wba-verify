@@ -364,7 +364,7 @@
   /* BLOOM EFFECT */
   #xterm,
   pre {
-    text-shadow: 0 0px 6px var(--terminal-text-shadow);
+    text-shadow: 0 0px 6px currentColor;
   }
 
   /*
@@ -442,8 +442,9 @@
 
   /* XTERM */
   #xterm {
-    min-height: 0;
+    overflow: hidden;
     height: 100%;
+    min-height: 0;
   }
 
   /*
