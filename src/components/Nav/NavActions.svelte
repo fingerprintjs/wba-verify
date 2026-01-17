@@ -8,11 +8,9 @@
   }
 
   // xterm.js terminal should be focused after button clicks
-  function handleCommand(e: Event, command: string) {
+  function handleCommand(command: string) {
     runTerminalCommand(command)
-    if (e.type !== 'click') {
-      focusXterm()
-    }
+    focusXterm()
   }
 
   onMount(() => {
@@ -31,10 +29,10 @@
 
       if (e.key === 'r' || e.key === 'R') {
         e.preventDefault()
-        handleCommand(e, 'r')
+        handleCommand('r')
       } else if (e.key === 'c' || e.key === 'C') {
         e.preventDefault()
-        handleCommand(e, 'c')
+        handleCommand('c')
       } else if (e.key === 'm' || e.key === 'M') {
         e.preventDefault()
         handleMute()
@@ -45,8 +43,9 @@
 
 <ul class="navbar-nav navbar-nav--no-js">
   <li>
-    <button class="btn btn--primary" onclick={(e) => handleCommand(e, 'c')}>
+    <button class="btn btn--primary" onclick={(e) => handleCommand('c')}>
       <svg
+        aria-hidden="true"
         width="12"
         height="12"
         viewBox="0 0 24 24"
@@ -66,8 +65,9 @@
   </li>
 
   <li>
-    <button class="btn btn--primary-outline rounded-none" onclick={(e) => handleCommand(e, 'r')}>
+    <button class="btn btn--primary-outline rounded-none" onclick={(e) => handleCommand('r')}>
       <svg
+        aria-hidden="true"
         width="12"
         height="12"
         viewBox="0 0 24 24"
@@ -89,6 +89,7 @@
   <li class="hidden md:inline">
     <button class="btn btn--primary-outline" onclick={handleMute}>
       <svg
+        aria-hidden="true"
         width="12"
         height="12"
         viewBox="0 0 24 24"
@@ -105,9 +106,7 @@
           fill="currentColor"
         />
       </svg>
-      <span style={$isMuted ? 'text-decoration: line-through; text-decoration-style: dotted;' : ''}>Aud</span><span
-        class="hidden md:inline">&nbsp;[M]</span
-      >
+      Aud<span class="hidden md:inline">&nbsp;[M]</span>
     </button>
   </li>
 </ul>
