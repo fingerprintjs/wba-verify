@@ -2,12 +2,11 @@
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
   import { CURL_ENDPOINT_URL, mountXterm } from './xterm.client'
+  import { FIGLET } from '../constants'
 
   import { spinnerEl, type Spinner } from './spinner'
 
   // Figlet banner
-  const FIGLET =
-    '██╗    ██╗██████╗  █████╗ ██╗   ██╗\n██║    ██║██╔══██╗██╔══██╗██║   ██║\n██║ █╗ ██║██████╔╝███████║██║   ██║\n██║███╗██║██╔══██╗██╔══██║╚██╗ ██╔╝\n╚███╔███╔╝██████╔╝██║  ██║ ╚████╔╝ \n ╚══╝╚══╝ ╚═════╝ ╚═╝  ╚═╝  ╚═══╝  \n WEB BOT AUTH VERIFICATION v0.0.1'
   const figletLines = FIGLET.split('\n').map((line) => (line.length === 0 ? '\u00A0' : line))
 
   // Create loading spinner and xterm.js terminal
@@ -87,9 +86,9 @@
 <div class="terminal">
   <div class="terminal__inner">
     <!-- Banner -->
-    <div class="terminal__figlet">
+    <div class="terminal__figlet" aria-hidden="true">
       {#each figletLines as line, i}
-        <pre class="figlet__line" style="--i:{i}" aria-hidden="true">{line}</pre>
+        <pre class="terminal__figlet-line" style="--i:{i}">{line}</pre>
       {/each}
     </div>
 
@@ -209,14 +208,14 @@
     /* animation: scanlines 1s linear 0s infinite normal none running; */
   }
 
-  @keyframes scanlines {
+  /* @keyframes scanlines {
     0% {
       transform: translateY(0);
     }
     100% {
       transform: translateY(4px);
     }
-  }
+  } */
 
   /* TERMINAL SCREEN */
   .terminal__inner {
@@ -338,25 +337,26 @@
   .terminal .terminal__figlet,
   .terminal .terminal__meta {
     color: var(--terminal-text-primary);
-    font-family: monospace;
+    font-family: var(--terminal-font-family);
     font-size: 14px;
     white-space: pre;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
   .terminal__meta {
     position: absolute;
-    top: 12px;
-    right: 11px;
+    top: 8px;
+    right: 12px;
     text-align: right;
   }
 
-  pre {
+  pre, code {
     color: var(--terminal-text-primary);
     line-height: normal;
     letter-spacing: -0.025em;
     font-size: 14px;
     font-family: var(--terminal-font-family);
+    text-shadow: 0 0px 6px currentColor;
   }
 
   .prose pre {
@@ -375,12 +375,6 @@
     to {
       transform: translate(-100%);
     }
-  }
-
-  /* BLOOM EFFECT */
-  #xterm,
-  pre {
-    text-shadow: 0 0px 6px currentColor;
   }
 
   /*
@@ -465,6 +459,7 @@
     overflow: hidden;
     height: 100%;
     min-height: 0;
+    text-shadow: 0 0px 6px currentColor;
   }
 
   /*
@@ -477,7 +472,7 @@
   }
 
   /* ANIMATIONS */
-  .figlet__line,
+  .terminal__figlet-line,
   .terminal__boot--no-js {
     opacity: 0;
     animation: flicker 100ms var(--ease-flicker) forwards;
