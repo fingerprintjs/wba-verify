@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { isMuted } from '../../stores/audio.ts'
-  import { focusXterm, runTerminalCommand } from '../xterm.client.ts'
+  import { focusXterm, executeXtermCommand } from '../xterm.client.ts'
 
   function handleMute() {
     isMuted.update((val) => !val)
@@ -9,7 +9,7 @@
 
   // xterm.js terminal should be focused after button clicks
   function handleCommand(command: string) {
-    runTerminalCommand(command)
+    executeXtermCommand(command)
     focusXterm()
   }
 

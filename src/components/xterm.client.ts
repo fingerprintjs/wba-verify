@@ -1,20 +1,16 @@
 import * as Xterm from '@xterm/xterm'
 import { FitAddon } from '@xterm/addon-fit'
 import '@xterm/xterm/css/xterm.css'
-
 import { spinnerXterm, type Spinner } from './spinner'
-
 import { verification, type VerificationState } from '../stores/verification.ts'
 import { isMuted } from '../stores/audio.ts'
-
 import { varValue } from '../utils/cssVar.ts'
 import { debounce } from '../utils/debounce.ts'
-
 import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
 
+// Define consts
 export const CURL_ENDPOINT_URL = 'https://webbotauth-api.fpjs.io/api/verify'
 
-// ANSI colors
 const ANSI = {
   reset: '\x1b[0m',
   bold: '\x1b[1m',
@@ -31,6 +27,14 @@ const ANSI = {
     red: '\x1b[48;2;243;34;121m',
   },
 }
+
+const CURL_CMD = `${ANSI.fg.dim}curl -H "Accept: application/json" \\
+     -H "Signature: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
+     -H "Signature-Input: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
+     -H "Signature-Agent: https://chatgpt.com" \\
+     ${CURL_ENDPOINT_URL}${ANSI.reset}`
+
+const MAX_HISTORY = 100
 
 // Command definitions
 type CommandHandler = (args: string[], term: Xterm.Terminal) => Promise<void> | void
@@ -102,12 +106,6 @@ const commands: Record<string, CommandSpec> = {
 }
 
 // Command handlers
-const CURL_CMD = `${ANSI.fg.dim}curl -H "Accept: application/json" \\
-     -H "Signature: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
-     -H "Signature-Input: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
-     -H "Signature-Agent: https://chatgpt.com" \\
-     ${CURL_ENDPOINT_URL}${ANSI.reset}`
-
 function curlCommand(_args: string[], term: Xterm.Terminal) {
   term.writeln(`Use this to call the endpoint and get JSON back (instead of HTML).`)
   term.writeln(`Replace the ${ANSI.fg.dim}...${ANSI.reset} values with real Signature headers.`)
@@ -368,7 +366,7 @@ export function mountXterm(el: HTMLElement) {
       case 'success':
         spinner?.stop()
         spinner = null
-        t.writeln('\x1b[32mVerification OK\x1b[0m')
+        t.writeln(`${ANSI.fg.green}[32mVerification OK${ANSI.reset}`)
         break
       case 'error':
         spinner?.stop()
@@ -382,10 +380,9 @@ export function mountXterm(el: HTMLElement) {
 
   // xterm input handling
   let buffer = ''
-  
   let cursor = 0
 
-  const MAX_HISTORY = 100
+  // cmd history
   let history: string[] = []
   let historyIndex = -1
 
@@ -397,11 +394,15 @@ export function mountXterm(el: HTMLElement) {
     }
   }
 
+  // on xterm data input
   t.onData((data) => {
-    console.log(history, cursor)
-
     switch (data) {
       case '\r': // Enter Key
+        if (buffer.trim()) {
+          pushHistory(buffer)
+          historyIndex = -1
+        }
+
         if (isBusy) {
           t.write(`\r\n${PROMPT}`)
           return
@@ -412,10 +413,8 @@ export function mountXterm(el: HTMLElement) {
         }
 
         dispatchCommand(buffer, t)
-        pushHistory(buffer)
         buffer = ''
         cursor = 0
-        historyIndex = -1
         break
 
       case '\u007f': // Backspace
@@ -503,7 +502,7 @@ export function focusXterm() {
 }
 
 // Run commands externally like clicking a button in navbar
-export function runTerminalCommand(cmd: string) {
+export function executeXtermCommand(cmd: string) {
   if (!term) return
   term.write(`\x1b[2K\r${PROMPT}${ANSI.fg.dim}${cmd}${ANSI.reset}`)
   dispatchCommand(cmd, term)
