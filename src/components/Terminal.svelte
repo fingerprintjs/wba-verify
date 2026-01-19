@@ -200,11 +200,12 @@
     background-image:
       radial-gradient(var(--terminal__inner-bg) 80%, transparent),
       linear-gradient(to bottom, rgb(255 255 255 / 0%), rgb(255 255 255 / 5%) 50%, rgb(0 0 0 / 5%) 70%, rgb(0 0 0 / 5%));
-    border: 0.5px solid rgba(255, 255, 255, 0.1);
-    pointer-events: none;
     background-size:
       100%,
       100% 4px;
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: inherit;
+    pointer-events: none;
     /* animation: scanlines 1s linear 0s infinite normal none running; */
   }
 
@@ -350,7 +351,8 @@
     text-align: right;
   }
 
-  pre, code {
+  pre,
+  code {
     color: var(--terminal-text-primary);
     line-height: normal;
     letter-spacing: -0.025em;
