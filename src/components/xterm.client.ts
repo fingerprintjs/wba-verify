@@ -382,8 +382,24 @@ export function mountXterm(el: HTMLElement) {
 
   // xterm input handling
   let buffer = ''
+  
+  let cursor = 0
+
+  const MAX_HISTORY = 100
+  let history: string[] = []
+  let historyIndex = -1
+
+  function pushHistory(cmd: string) {
+    history.push(cmd)
+    // Remove oldest command if size is exceeded
+    if (history.length > MAX_HISTORY) {
+      history.shift()
+    }
+  }
 
   t.onData((data) => {
+    console.log(history, cursor)
+
     switch (data) {
       case '\r': // Enter Key
         if (isBusy) {
@@ -396,20 +412,80 @@ export function mountXterm(el: HTMLElement) {
         }
 
         dispatchCommand(buffer, t)
+        pushHistory(buffer)
         buffer = ''
+        cursor = 0
+        historyIndex = -1
         break
 
       case '\u007f': // Backspace
-        if (buffer.length > 0) {
-          buffer = buffer.slice(0, -1)
+        if (cursor > 0) {
+          buffer = buffer.slice(0, cursor - 1) + buffer.slice(cursor)
+
+          cursor--
           t.write('\b \b')
+
+          if (cursor < buffer.length) {
+            t.write(buffer.slice(cursor))
+            t.write(`\x1b[${buffer.length - cursor}D`)
+          }
+        }
+        break
+
+      case '\u001b[A': // Up Arrow
+        if (history.length === 0) break
+        if (historyIndex === -1) {
+          historyIndex = history.length - 1
+        } else if (historyIndex > 0) {
+          historyIndex--
+        }
+        // Clear current line
+        t.write(`\x1b[2K\r${PROMPT}${history[historyIndex]}`)
+        buffer = history[historyIndex]
+        cursor = buffer.length
+        break
+
+      case '\u001b[B': // Down Arrow
+        if (history.length === 0) break
+        if (historyIndex === -1) break
+        if (historyIndex < history.length - 1) {
+          historyIndex++
+          t.write(`\x1b[2K\r${PROMPT}${history[historyIndex]}`)
+          buffer = history[historyIndex]
+          cursor = buffer.length
+        } else {
+          historyIndex = -1
+          t.write(`\x1b[2K\r${PROMPT}`)
+          buffer = ''
+        }
+        break
+
+      case '\x1b[D': // Left Arrow
+        if (cursor > 0) {
+          cursor--
+          t.write('\x1b[D')
+        }
+        break
+
+      case '\x1b[C': // Right Arrow
+        if (cursor < buffer.length) {
+          cursor++
+          t.write('\x1b[C')
         }
         break
 
       default: // Printable characters
         if (data >= ' ' && data <= '~') {
-          buffer += data
+          buffer = buffer.slice(0, cursor) + data + buffer.slice(cursor)
+
           t.write(data)
+
+          if (cursor < buffer.length - 1) {
+            t.write(buffer.slice(cursor + 1))
+            t.write(`\x1b[${buffer.length - cursor - 1}D`)
+          }
+
+          cursor++
         }
     }
   })
