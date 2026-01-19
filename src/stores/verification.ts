@@ -1,6 +1,6 @@
 import { get, writable } from 'svelte/store'
 import { runWBAVTest } from '../utils/runWBAVTest.ts'
-import { WBAV_ERROR_MESSAGES } from '../utils/wbavErrors.ts'
+import { WBAV_ERROR_MESSAGES } from '../constants.ts'
 
 type VerificationErrorItem = {
   code: string
