@@ -23,11 +23,19 @@ const ANSI = {
     red: '\x1b[38;2;243;34;121m',
     orange: '\x1b[38;2;243;88;32m',
     white: '\x1b[38;2;255;221;200m',
+    black: '\x1b[38;2;0;0;0m',
   },
   bg: {
     red: '\x1b[48;2;243;34;121m',
+    green: '\x1b[48;2;89;243;34m',
   },
 }
+
+const INTRO =
+  'To use this tool:\r\n' +
+  `${ANSI.fg.dim}1.${ANSI.reset} Have your bot open this URL, like in Agent mode.\r\n` +
+  `${ANSI.fg.dim}2.${ANSI.reset} If verification fails, ensure your bot has the required headers.\r\n` +
+  `${ANSI.fg.dim}3.${ANSI.reset} Enter ${ANSI.bold}curl${ANSI.reset} for API, ${ANSI.bold}help${ANSI.reset} for commands.\r\n`
 
 const CURL_CMD = `${ANSI.fg.dim}curl -H "Accept: application/json" \\
      -H "Signature: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
@@ -59,7 +67,8 @@ const commands: Record<string, CommandSpec> = {
     description: 'Clear the terminal',
     handler: (_args, term) => {
       term.clear()
-      term.write(intro)
+      term.write(INTRO)
+      term.write(`\r\n${PROMPT}`)
     },
   },
   curl: {
@@ -122,13 +131,11 @@ function curlCommand(_args: string[], term: Xterm.Terminal) {
         await navigator.clipboard.writeText(CURL_CMD)
         t.write(`\r\n${ANSI.fg.green}✓ curl copied to clipboard${ANSI.reset}`)
       } catch {
-        t.write(`\r\n${ANSI.fg.red} Failed to copy to clipboard${ANSI.reset}`)
+        t.write(`\r\n${ANSI.fg.red}Failed to copy to clipboard${ANSI.reset}`)
       }
-      t.write(`\r\n\r\n${PROMPT}`)
     },
     onNo: (t) => {
       t.write(`\r\n${ANSI.fg.dim}Ok, not copied.${ANSI.reset}`)
-      t.write(`\r\n${PROMPT}`)
     },
   })
 
@@ -140,9 +147,7 @@ export async function copyCommand(_args: string[], term: Xterm.Terminal) {
   const v = verification.get(verification)
 
   if (!v.raw) {
-    term.write(
-      `${ANSI.fg.dim}No API response to copy.${ANSI.reset} Enter ${ANSI.bold}r${ANSI.reset} to run the test.\r\n`
-    )
+    term.write(`${ANSI.fg.dim}No API response to copy.${ANSI.reset} Enter ${ANSI.bold}r${ANSI.reset} to run the test.`)
     return
   }
   try {
@@ -205,25 +210,27 @@ async function retryCommand(_args: string[]) {
 }
 
 function promptAfterSuccess(term: Xterm.Terminal) {
+  term.write('\r\n')
+
+  term.writeln(`${ANSI.bg.green}${ANSI.fg.black}Verification OK${ANSI.reset}`)
   term.writeln('')
-  term.writeln(`${ANSI.fg.green}${ANSI.bold}Verification OK${ANSI.reset}`)
-  term.writeln(`${ANSI.fg.dim}Your bot request was validated using RFC 9421 HTTP Message Signatures.${ANSI.reset}`)
+  term.writeln(`${ANSI.fg.green}Your bot request was validated using RFC 9421 HTTP Message Signatures.${ANSI.reset}`)
+  term.writeln('')
   term.writeln(
-    `${ANSI.fg.dim}Next: learn how to integrate this into your bot and generate valid signatures.${ANSI.reset}`
+    `${ANSI.fg.white}Optional next step: submit your bot to Fingerprint’s Verified Bots directory.${ANSI.reset}`
   )
-  term.writeln('')
+
+  term.write('\r\n')
 
   const confirm = createConfirmPrompt({
-    question: 'Open integration docs',
-    defaultYes: false,
+    question: 'See how to submit your bot',
+    description: '(opens docs)',
     onYes: (t) => {
       window.open(WBAV_DOCS_URL, '_blank', 'noopener,noreferrer')
       t.write(`\r\n${ANSI.fg.dim}Opened docs in a new tab.${ANSI.reset}`)
-      t.write(`\r\n${PROMPT}`)
     },
     onNo: (t) => {
       t.write(`\r\n${ANSI.fg.dim}Ok — you can run ${ANSI.bold}docs${ANSI.reset}${ANSI.fg.dim} anytime.${ANSI.reset}`)
-      t.write(`\r\n${PROMPT}`)
     },
   })
 
@@ -241,6 +248,7 @@ let nextLineHandler: NextLineHandler | null = null
 
 type ConfirmPrompt = {
   question: string
+  description?: string
   defaultYes?: boolean
   onYes: (term: Xterm.Terminal) => Promise<void> | void
   onNo: (term: Xterm.Terminal) => Promise<void> | void
@@ -251,9 +259,11 @@ function createConfirmPrompt(cfg: ConfirmPrompt) {
 
   return {
     ask(term: Xterm.Terminal) {
-      const suffix = defaultYes ? `${ANSI.fg.blue}[Y]/n${ANSI.reset}` : `${ANSI.fg.blue}y/[N]${ANSI.reset}`
+      const suffix = defaultYes ? `${ANSI.fg.white}[Y]/n ${ANSI.reset}` : `${ANSI.fg.white}y/[N] ${ANSI.reset}`
 
-      term.write(`${ANSI.bold}${ANSI.fg.white}${cfg.question}?${ANSI.reset} ${suffix}`)
+      term.write(
+        `${ANSI.bold}${ANSI.fg.white}${cfg.question}?${ANSI.reset}${ANSI.fg.dim}${cfg.description ? ` ${cfg.description}` : ''}${ANSI.reset} ${suffix}`
+      )
     },
     async onLine(line: string, term: Xterm.Terminal) {
       const answer = line.trim().toLowerCase()
@@ -261,8 +271,10 @@ function createConfirmPrompt(cfg: ConfirmPrompt) {
 
       if (isYes) {
         await cfg.onYes(term)
+        term.write(`\r\n${PROMPT}`)
       } else {
         await cfg.onNo(term)
+        term.write(`\r\n${PROMPT}`)
       }
     },
   }
@@ -309,17 +321,14 @@ async function dispatchCommand(input: string, term: Xterm.Terminal): Promise<voi
     if (shouldBlock) {
       isBusy = false
     }
-    term.write(`\r\n${PROMPT}`)
+    // Always add prompt unless an next line handler takes over
+    if (!nextLineHandler) {
+      term.write(`\r\n${PROMPT}`)
+    }
   }
 }
 
 // Terminal setup and mounting
-const intro =
-  'To use this tool:\r\n' +
-  `${ANSI.fg.dim}1.${ANSI.reset} Have your bot open this URL, like in Agent mode.\r\n` +
-  `${ANSI.fg.dim}2.${ANSI.reset} If verification fails, ensure your bot has the required headers.\r\n` +
-  `${ANSI.fg.dim}3.${ANSI.reset} Enter ${ANSI.bold}curl${ANSI.reset} for API, ${ANSI.bold}help${ANSI.reset} for commands.\r\n\n`
-
 let term: Xterm.Terminal | null = null
 
 export function mountXterm(el: HTMLElement) {
@@ -372,8 +381,8 @@ export function mountXterm(el: HTMLElement) {
 
   requestAnimationFrame(() => fit.fit())
 
-  // Write the intro text
-  t.write(intro)
+  // Write the intro
+  t.write(INTRO)
 
   // SFX
   const writeSound = new Audio(WriteSoundUrl)
@@ -519,8 +528,7 @@ export function mountXterm(el: HTMLElement) {
     }
   })
 
-  // write the $ prompt and focus the terminal
-  t.write(PROMPT)
+  // focus the terminal
   t.focus()
 
   return term

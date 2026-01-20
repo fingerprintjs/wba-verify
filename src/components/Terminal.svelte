@@ -29,7 +29,7 @@
   $: statusText = (() => {
     const next: StatusText | null =
       $verification.status === 'success'
-        ? ['Verification Successful', 'Your bot is signed']
+        ? ['Verification OK', 'Your bot is signed']
         : $verification.status === 'error'
           ? ['Verification Failed', 'Your bot is not signed']
           : null
