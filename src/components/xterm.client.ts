@@ -204,8 +204,25 @@ function helpCommand(_args: string[], term: Xterm.Terminal) {
   }
 }
 
-async function retryCommand(_args: string[]) {
-  await verification.run(CURL_ENDPOINT_URL)
+async function retryCommand(_args: string[], term: Xterm.Terminal) {
+  verification.run(CURL_ENDPOINT_URL)
+
+  const v: VerificationState = await new Promise((resolve) => {
+    const unsubscribe = verification.subscribe((state) => {
+      if (state.status === 'success' || state.status === 'error') {
+        unsubscribe()
+        resolve(state)
+      }
+    })
+  })
+
+  if (v.status === 'success') {
+    promptAfterSuccess(term)
+  } else {
+    term.writeln(
+      `\r\n${ANSI.bg.red}${ANSI.fg.white}Verification Failed${ANSI.reset}\r\n\n${ANSI.fg.red}${v.error ?? ''}${ANSI.reset}`
+    )
+  }
 }
 
 function promptAfterSuccess(term: Xterm.Terminal) {
@@ -329,6 +346,7 @@ async function dispatchCommand(input: string, term: Xterm.Terminal): Promise<voi
 
 // Terminal setup and mounting
 let term: Xterm.Terminal | null = null
+let hasBooted = false
 
 export function mountXterm(el: HTMLElement) {
   if ((el as any).__xterm__) return
@@ -393,24 +411,35 @@ export function mountXterm(el: HTMLElement) {
   // Subscribe to verification store
   // Retry can be triggered by command or externally i.e. navbar
   let spinner: Spinner | null = null
+
   verification.subscribe((v: VerificationState) => {
-    // Only handle UI updates here. The command logic is in retryCommand.
     switch (v.status) {
       case 'pending':
         spinner?.stop()
         spinner = spinnerXterm(t, 'Verifying Bot...')
         break
+
       case 'success':
-        spinner?.stop()
-        spinner = null
-        promptAfterSuccess(t)
-        break
       case 'error':
         spinner?.stop()
         spinner = null
-        t.writeln(
-          `\r\n${ANSI.bg.red}${ANSI.fg.white}Verification Failed${ANSI.reset}\r\n\n${ANSI.fg.red}${v.error ?? ''}${ANSI.reset}`
-        )
+
+        if (!hasBooted) {
+          hasBooted = true
+
+          t.write('\r\n')
+
+          if (v.status === 'success') {
+            promptAfterSuccess(t)
+          } else {
+            t.writeln(
+              `\r\n${ANSI.bg.red}${ANSI.fg.white}Verification Failed${ANSI.reset}\r\n\n${ANSI.fg.red}${v.error ?? ''}${ANSI.reset}`
+            )
+          }
+
+          t.write(`\r\n${PROMPT}`)
+        }
+
         break
     }
   })
