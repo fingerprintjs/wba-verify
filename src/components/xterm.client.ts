@@ -222,8 +222,8 @@ function promptAfterSuccess(term: Xterm.Terminal) {
   term.write('\r\n')
 
   const confirm = createConfirmPrompt({
-    question: 'See how to submit your bot',
-    description: '(opens docs)',
+    question: 'Submit your bot',
+    description: '(opens dashboard.fingerprint.com)',
     onYes: (t) => {
       window.open(WBAV_DOCS_URL, '_blank', 'noopener,noreferrer')
       t.write(`\r\n${ANSI.fg.dim}Opened docs in a new tab.${ANSI.reset}`)
@@ -409,7 +409,7 @@ export function mountXterm(el: HTMLElement) {
         spinner?.stop()
         spinner = null
         t.writeln(
-          `${ANSI.bg.red}${ANSI.fg.white}Verification Failed${ANSI.reset}\r\n\n${ANSI.fg.red}${v.error ?? ''}${ANSI.reset}`
+          `\r\n${ANSI.bg.red}${ANSI.fg.white}Verification Failed${ANSI.reset}\r\n\n${ANSI.fg.red}${v.error ?? ''}${ANSI.reset}`
         )
         break
     }
