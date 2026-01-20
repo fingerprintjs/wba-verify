@@ -10,7 +10,8 @@ import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
 
 // Define consts
 export const CURL_ENDPOINT_URL = 'https://webbotauth-api.fpjs.io/api/verify'
-export const WBAV_DOCS_URL = 'https://docs.fingerprint.com/docs/web-bot-authentication'
+export const DOCS_URL = 'https://docs.fingerprint.com'
+export const SUBMIT_BOT_URL = 'https://dashboard.fingerprint.com/submit-bot'
 
 const ANSI = {
   reset: '\x1b[0m',
@@ -154,7 +155,7 @@ export async function copyCommand(_args: string[], term: Xterm.Terminal) {
 }
 
 function docsCommand(_args: string[], term: Xterm.Terminal) {
-  window.open(WBAV_DOCS_URL, '_blank', 'noopener,noreferrer')
+  window.open(DOCS_URL, '_blank', 'noopener,noreferrer')
   term.writeln(`${ANSI.fg.dim}Opened docs in a new tab${ANSI.reset}`)
 }
 
@@ -209,26 +210,26 @@ function promptAfterSuccess(term: Xterm.Terminal) {
   term.writeln(`${ANSI.fg.green}${ANSI.bold}Verification OK${ANSI.reset}`)
   term.writeln(`${ANSI.fg.dim}Your bot request was validated using RFC 9421 HTTP Message Signatures.${ANSI.reset}`)
   term.writeln(
-    `${ANSI.fg.dim}Next: learn how to integrate this into your bot and generate valid signatures.${ANSI.reset}`
+    `${ANSI.fg.dim}Next: submit your bot to Fingerprint to be reviewed and added to the bot directory.${ANSI.reset}`
   )
   term.writeln('')
 
-  const confirm = createConfirmPrompt({
-    question: 'Open integration docs',
+  const confirmPrompt = createConfirmPrompt({
+    question: 'Open submit bot page',
     defaultYes: false,
     onYes: (t) => {
-      window.open(WBAV_DOCS_URL, '_blank', 'noopener,noreferrer')
-      t.write(`\r\n${ANSI.fg.dim}Opened docs in a new tab.${ANSI.reset}`)
+      window.open(SUBMIT_BOT_URL, '_blank', 'noopener,noreferrer')
+      t.write(`\r\n${ANSI.fg.dim}Opened submit bot page in a new tab.${ANSI.reset}`)
       t.write(`\r\n${PROMPT}`)
     },
     onNo: (t) => {
-      t.write(`\r\n${ANSI.fg.dim}Ok — you can run ${ANSI.bold}docs${ANSI.reset}${ANSI.fg.dim} anytime.${ANSI.reset}`)
+      t.write(`\r\n${ANSI.fg.dim}No problem — staying here.${ANSI.reset}`)
       t.write(`\r\n${PROMPT}`)
     },
   })
 
-  confirm.ask(term)
-  nextLineHandler = confirm.onLine
+  confirmPrompt.ask(term)
+  nextLineHandler = confirmPrompt.onLine
 }
 
 // Dispatcher
