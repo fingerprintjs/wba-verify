@@ -10,6 +10,7 @@ import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
 
 // Define consts
 export const CURL_ENDPOINT_URL = 'https://webbotauth-api.fpjs.io/api/verify'
+export const WBAV_DOCS_URL = 'https://docs.fingerprint.com/docs/web-bot-authentication'
 
 const ANSI = {
   reset: '\x1b[0m',
@@ -153,8 +154,7 @@ export async function copyCommand(_args: string[], term: Xterm.Terminal) {
 }
 
 function docsCommand(_args: string[], term: Xterm.Terminal) {
-  const url = 'https://docs.fingerprint.com'
-  window.open(url, '_blank', 'noopener,noreferrer')
+  window.open(WBAV_DOCS_URL, '_blank', 'noopener,noreferrer')
   term.writeln(`${ANSI.fg.dim}Opened docs in a new tab${ANSI.reset}`)
 }
 
@@ -204,6 +204,33 @@ async function retryCommand(_args: string[]) {
   await verification.run(CURL_ENDPOINT_URL)
 }
 
+function promptAfterSuccess(term: Xterm.Terminal) {
+  term.writeln('')
+  term.writeln(`${ANSI.fg.green}${ANSI.bold}Verification OK${ANSI.reset}`)
+  term.writeln(`${ANSI.fg.dim}Your bot request was validated using RFC 9421 HTTP Message Signatures.${ANSI.reset}`)
+  term.writeln(
+    `${ANSI.fg.dim}Next: learn how to integrate this into your bot and generate valid signatures.${ANSI.reset}`
+  )
+  term.writeln('')
+
+  const confirm = createConfirmPrompt({
+    question: 'Open integration docs',
+    defaultYes: false,
+    onYes: (t) => {
+      window.open(WBAV_DOCS_URL, '_blank', 'noopener,noreferrer')
+      t.write(`\r\n${ANSI.fg.dim}Opened docs in a new tab.${ANSI.reset}`)
+      t.write(`\r\n${PROMPT}`)
+    },
+    onNo: (t) => {
+      t.write(`\r\n${ANSI.fg.dim}Ok — you can run ${ANSI.bold}docs${ANSI.reset}${ANSI.fg.dim} anytime.${ANSI.reset}`)
+      t.write(`\r\n${PROMPT}`)
+    },
+  })
+
+  confirm.ask(term)
+  nextLineHandler = confirm.onLine
+}
+
 // Dispatcher
 let isBusy = false
 const PROMPT = '$ '
@@ -224,7 +251,9 @@ function createConfirmPrompt(cfg: ConfirmPrompt) {
 
   return {
     ask(term: Xterm.Terminal) {
-      term.write(`${ANSI.bold}${ANSI.fg.white}${cfg.question}?${ANSI.reset} ${ANSI.fg.blue}[Y]/n${ANSI.reset}`) // Write the question
+      const suffix = defaultYes ? `${ANSI.fg.blue}[Y]/n${ANSI.reset}` : `${ANSI.fg.blue}y/[N]${ANSI.reset}`
+
+      term.write(`${ANSI.bold}${ANSI.fg.white}${cfg.question}?${ANSI.reset} ${suffix}`)
     },
     async onLine(line: string, term: Xterm.Terminal) {
       const answer = line.trim().toLowerCase()
@@ -366,7 +395,7 @@ export function mountXterm(el: HTMLElement) {
       case 'success':
         spinner?.stop()
         spinner = null
-        t.writeln(`${ANSI.fg.green}[32mVerification OK${ANSI.reset}`)
+        promptAfterSuccess(t)
         break
       case 'error':
         spinner?.stop()
