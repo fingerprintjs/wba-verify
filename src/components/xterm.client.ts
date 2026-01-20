@@ -75,11 +75,12 @@ const commands: Record<string, CommandSpec> = {
     description: 'Show curl example and optionally copy it',
     handler: curlCommand,
   },
-  docs: {
-    category: 'info',
-    description: 'Open docs in a new tab',
-    handler: docsCommand,
-  },
+  // TODO: add docs link once it is live
+  // docs: {
+  //   category: 'info',
+  //   description: 'Open docs in a new tab',
+  //   handler: docsCommand,
+  // },
   fp: {
     category: 'info',
     description: 'Open fingerprint.com in a new tab',
