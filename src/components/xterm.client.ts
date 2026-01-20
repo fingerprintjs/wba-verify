@@ -68,7 +68,6 @@ const commands: Record<string, CommandSpec> = {
     handler: (_args, term) => {
       term.clear()
       term.write(INTRO)
-      term.write(`\r\n${PROMPT}`)
     },
   },
   curl: {
