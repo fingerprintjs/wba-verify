@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <title>WBAV</title>
+    <style>
+      html {
+        visibility: hidden;
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='terminal'>
+      <div class='terminal__inner'>
+        <h1 class='sr-only'>Web Bot Auth Verification v0.0.1</h1>
+        <div class='terminal__figlet' aria-hidden='true'></div>
+        <pre
+          class='terminal__boot'><b style="color: var(--ansi-dim)">Test your bot?&nbsp;</b>[Y]/n<span class="cursor" /></pre>
+      </div>
+      <!-- Static effect -->
+      <div class='static' aria-hidden='true'></div>
+    </div>
+
+    <script src='../iframe/iframe.ts'></script>
+  </body>
+</html>

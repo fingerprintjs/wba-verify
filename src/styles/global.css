@@ -34,7 +34,8 @@ body::before {
   opacity: 0.02;
 }
 
-pre, code {
+pre,
+code {
   font-family: var(--font-mono);
 }
 
@@ -49,7 +50,8 @@ a:focus {
   outline-offset: 2px;
 }
 
-b, strong {
+b,
+strong {
   font-weight: 600;
 }
 
@@ -234,7 +236,6 @@ button {
 
 /* ANIMATIONS */
 @keyframes blink {
-
   0%,
   50% {
     opacity: 1;
@@ -246,7 +247,6 @@ button {
 }
 
 @keyframes flicker {
-
   0%,
   25%,
   75% {
