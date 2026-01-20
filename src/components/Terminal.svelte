@@ -101,7 +101,7 @@
         <code>&nbsp;</code>
         <code style="--i:3">Real cryptographic verification for Web Bot Auth </code>
         <code style="--i:4"
-        >using <a href="https://datatracker.ietf.org/doc/html/rfc9421" target="_blank">RFC 9421</a
+        >using <a href="https://datatracker.ietf.org/wg/webbotauth/about/" target="_blank">RFC 9421</a
         > HTTP Message Signatures </code>
       </pre>
 

@@ -213,10 +213,10 @@ function promptAfterSuccess(term: Xterm.Terminal) {
 
   term.writeln(`${ANSI.bg.green}${ANSI.fg.black}Verification OK${ANSI.reset}`)
   term.writeln('')
-  term.writeln(`${ANSI.fg.green}Your bot request was validated using RFC 9421 HTTP Message Signatures.${ANSI.reset}`)
+  term.writeln(`${ANSI.fg.green}Your bot request was verified using Web Bot Auth standard.${ANSI.reset}`)
   term.writeln('')
   term.writeln(
-    `${ANSI.fg.white}Optional next step: submit your bot to Fingerprint’s Verified Bots directory.${ANSI.reset}`
+    `${ANSI.fg.white}Optional next step: submit your bot to Fingerprint’s Authorized Bots directory.${ANSI.reset}`
   )
 
   term.write('\r\n')
