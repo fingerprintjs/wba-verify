@@ -1,3 +1,8 @@
+// Figlet banner for terminal
+export const FIGLET =
+  '██╗    ██╗██████╗  █████╗ ██╗   ██╗\n██║    ██║██╔══██╗██╔══██╗██║   ██║\n██║ █╗ ██║██████╔╝███████║██║   ██║\n██║███╗██║██╔══██╗██╔══██║╚██╗ ██╔╝\n╚███╔███╔╝██████╔╝██║  ██║ ╚████╔╝ \n ╚══╝╚══╝ ╚═════╝ ╚═╝  ╚═╝  ╚═══╝  \n WEB BOT AUTH VERIFICATION v0.0.1'
+
+// Error messages for WBAV test
 export const WBAV_ERROR_MESSAGES: Record<string, string> = {
   MISSING_SIGNATURE_HEADERS: 'Missing required signature headers: Signature, Signature-Input, and Signature-Agent.',
   INVALID_SIGNATURE_AGENT: 'Signature-Agent header is malformed or invalid (must be an HTTPS root domain).',

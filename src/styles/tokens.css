@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+:root {
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --bezel: 8px;
+
+  --terminal-font-family: var(--font-mono);
+  --terminal-text-primary: #f35b22;
+  --terminal-text-dim: #fea88b;
+  --terminal-bg-color: transparent;
+  --terminal__inner-bg: #f3912215;
+  --terminal__scanline-bg: #f3912230;
+  --terminal__commands-bg: #f35b2233;
+  --terminal-text-shadow: #f3912295;
+  --terminal-pane-title-bg: black;
+  --terminal-selection-bg: white;
+  --terminal-selection-color: black;
+
+  --ansi-red: #f32279;
+  --ansi-green: #59f322;
+  --ansi-dim: #a66854;
+
+  /* Compass Design System */
+
+  /* Colors */
+  --color-white: 0 0% 100%;
+  --color-black: 0 0% 0%;
+
+  --color-gray-1: 60 13% 97%;
+  --color-gray-2: 60 9% 94%;
+  --color-gray-3: 75 7% 89%;
+  --color-gray-4: 60 4% 85%;
+  --color-gray-5: 60 2% 75%;
+  --color-gray-6: 60 2% 62%;
+  --color-gray-7: 60 1% 54%;
+  --color-gray-8: 80 1% 42%;
+  --color-gray-9: 80 2% 28%;
+  --color-gray-10: 80 6% 9%;
+
+  --color-orange-1: 15 75% 97%;
+  --color-orange-2: 24 100% 93%;
+  --color-orange-3: 23 100% 89%;
+  --color-orange-4: 17 100% 85%;
+  --color-orange-5: 15 98% 77%;
+  --color-orange-6: 14 91% 65%;
+  --color-orange-7: 16 90% 54%;
+  --color-orange-8: 17 85% 40%;
+  --color-orange-9: 17 62% 29%;
+  --color-orange-10: 16 82% 11%;
+
+  --color-green-1: 130 33% 96%;
+  --color-green-2: 124 48% 94%;
+  --color-green-3: 123 38% 89%;
+  --color-green-4: 125 36% 82%;
+  --color-green-5: 126 38% 70%;
+  --color-green-6: 128 33% 54%;
+  --color-green-7: 132 36% 42%;
+  --color-green-8: 132 50% 33%;
+  --color-green-9: 134 58% 21%;
+  --color-green-10: 131 69% 8%;
+
+  /* Animations */
+  --ease-flicker: cubic-bezier(0.36, 2.09, 0.07, -1.52);
+}
