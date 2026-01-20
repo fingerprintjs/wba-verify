@@ -16,6 +16,8 @@ html {
 }
 
 body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
     height: 100vh;
 }
 
@@ -26,6 +28,16 @@ pre {
     font-size: 14px;
     font-family: var(--terminal-font-family);
     text-shadow: 0 0 8px currentColor;
+}
+
+b,
+strong {
+    font-weight: 600;
+}
+
+::selection {
+    background: var(--terminal-selection-bg);
+    color: var(--terminal-selection-color);
 }
 
 /* UTILITY CLASSES */
@@ -70,7 +82,7 @@ pre {
     position: absolute;
     inset: 0;
     background-image:
-        radial-gradient(var(--terminal__inner-bg) 80%, transparent),
+        radial-gradient(var(--terminal__inner-bg) 90%, transparent),
         linear-gradient(to bottom, rgb(255 255 255 / 0%), rgb(255 255 255 / 5%) 50%, rgb(0 0 0 / 5%) 70%, rgb(0 0 0 / 5%));
     border: 0.5px solid rgba(255, 255, 255, 0.1);
     pointer-events: none;

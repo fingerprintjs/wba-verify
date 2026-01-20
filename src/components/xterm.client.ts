@@ -387,6 +387,7 @@ export function mountXterm(el: HTMLElement) {
   let historyIndex = -1
 
   function pushHistory(cmd: string) {
+    if (cmd.trim().length === 0) return
     history.push(cmd)
     // Remove oldest command if size is exceeded
     if (history.length > MAX_HISTORY) {
