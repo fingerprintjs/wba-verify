@@ -6,6 +6,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
+    "prod:local": "npm run build && npm run preview",
     "astro": "astro",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
