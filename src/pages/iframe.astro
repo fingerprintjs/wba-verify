@@ -12,13 +12,16 @@ import IframeBoot from '../components/IframeBoot.svelte'
     <title>WBAV</title>
 
     <style>
+      /* Default visible state */
+      html {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      /* Hide only while boot is pending */
       html[data-wbav-boot='pending'] {
         visibility: hidden;
         opacity: 0;
-      }
-
-      html {
-        transition: opacity 120ms ease;
       }
     </style>
 
@@ -31,8 +34,7 @@ import IframeBoot from '../components/IframeBoot.svelte'
         <h1 class='sr-only'>Web Bot Auth Verification v0.0.1</h1>
         <div class='terminal__figlet' aria-hidden='true'></div>
         <pre
-          class='terminal__boot'><b style="color: var(--ansi-dim)">Test your bot?&nbsp;</b>[Y]/n<span class="cursor" />
-        </pre>
+          class='terminal__boot'><b style="color: var(--ansi-dim)">Test your bot?&nbsp;</b>[Y]/n<span class="cursor" /></pre>
       </div>
       <div class='static' aria-hidden='true'></div>
     </div>
