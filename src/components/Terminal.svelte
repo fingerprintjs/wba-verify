@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
-  import { CURL_ENDPOINT_URL, mountXterm } from './xterm.client'
-  import { FIGLET } from '../constants'
+  import { mountXterm } from './xterm.client'
+  import { FIGLET, CURL_ENDPOINT_URL, WBA_SPEC_URL } from '../constants'
 
   import { spinnerEl, type Spinner } from './spinner'
 
@@ -29,7 +29,7 @@
   $: statusText = (() => {
     const next: StatusText | null =
       $verification.status === 'success'
-        ? ['Verification Successful', 'Your bot is signed']
+        ? ['Verification OK', 'Your bot is signed']
         : $verification.status === 'error'
           ? ['Verification Failed', 'Your bot is not signed']
           : null
@@ -99,10 +99,9 @@
         <code>&nbsp;</code>
         <code>&nbsp;</code>
         <code>&nbsp;</code>
-        <code style="--i:3">Real cryptographic verification for Web Bot Auth </code>
-        <code style="--i:4"
-        >using <a href="https://datatracker.ietf.org/doc/html/rfc9421" target="_blank">RFC 9421</a
-        > HTTP Message Signatures </code>
+        <code style="--i:3"
+        >Real cryptographic verification for <a href={WBA_SPEC_URL} target="_blank">Web Bot Auth</a> </code>
+        <code style="--i:4">using RFC 9421 HTTP Message Signatures </code>
       </pre>
 
     <!-- If JavaScript is disabled -->
@@ -174,6 +173,8 @@
 
 <style>
   .terminal__boot {
+    padding: 8px;
+    border: 1px solid transparent;
     word-break: break-all;
     white-space: pre-wrap;
   }
@@ -479,6 +480,13 @@
     opacity: 0;
     animation: flicker 100ms var(--ease-flicker) forwards;
     animation-delay: calc(25ms * var(--i));
+  }
+
+  .terminal__figlet-line:hover {
+    opacity: 1;
+    animation: none;
+    animation-duration: 75ms;
+    animation-delay: 0ms;
   }
 
   .terminal__status,
