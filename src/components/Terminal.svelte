@@ -531,9 +531,7 @@
     height: 18px;
     animation: blink 1s step-start 0s infinite;
     background: currentColor;
-    box-shadow:
-      inset 0 0 1px 0 currentColor,
-      0 0 1px 0 currentColor;
+    box-shadow: 0 0 4px currentColor;
   }
 
   /* RESPONSIVE */
