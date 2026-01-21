@@ -100,9 +100,7 @@
         <code>&nbsp;</code>
         <code>&nbsp;</code>
         <code style="--i:3"
-        >Real cryptographic verification for <a href={WBA_SPEC_URL} target="_blank"
-          >Web Bot Auth</a
-        > </code>
+        >Real cryptographic verification for <a href={WBA_SPEC_URL} target="_blank">Web Bot Auth</a> </code>
         <code style="--i:4">using RFC 9421 HTTP Message Signatures </code>
       </pre>
 
@@ -480,6 +478,13 @@
     opacity: 0;
     animation: flicker 100ms var(--ease-flicker) forwards;
     animation-delay: calc(25ms * var(--i));
+  }
+
+  .terminal__figlet-line:hover {
+    opacity: 1;
+    animation: none;
+    animation-duration: 75ms;
+    animation-delay: 0ms;
   }
 
   .terminal__status,
