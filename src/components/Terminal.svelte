@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
   import { CURL_ENDPOINT_URL, mountXterm } from './xterm.client'
-  import { FIGLET } from '../constants'
+  import { FIGLET, WBA_SPEC_URL } from '../constants'
 
   import { spinnerEl, type Spinner } from './spinner'
 
@@ -100,7 +100,7 @@
         <code>&nbsp;</code>
         <code>&nbsp;</code>
         <code style="--i:3"
-        >Real cryptographic verification for <a href="https://datatracker.ietf.org/wg/webbotauth/about/" target="_blank"
+        >Real cryptographic verification for <a href={WBA_SPEC_URL} target="_blank"
           >Web Bot Auth</a
         > </code>
         <code style="--i:4">using RFC 9421 HTTP Message Signatures </code>

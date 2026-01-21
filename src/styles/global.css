@@ -45,7 +45,8 @@ ul {
   margin: 0;
 }
 
-a:focus {
+a:focus-visible,
+button:focus-visible {
   outline: 2px solid hsl(var(--color-orange-7));
   outline-offset: 2px;
 }
@@ -236,6 +237,7 @@ button {
 
 /* ANIMATIONS */
 @keyframes blink {
+
   0%,
   50% {
     opacity: 1;
@@ -247,6 +249,7 @@ button {
 }
 
 @keyframes flicker {
+
   0%,
   25%,
   75% {
