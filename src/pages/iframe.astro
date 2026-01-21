@@ -1,7 +1,6 @@
 ---
-import iframeCss from '../iframe/styles.css?inline'
-import tokensCss from '../styles/tokens.css?inline'
-import IframeBoot from '../components/IframeBoot.svelte'
+import TerminalEmbed from '../components/TerminalEmbed.svelte'
+import '../styles/iframe.css'
 ---
 
 <!doctype html>
@@ -10,33 +9,9 @@ import IframeBoot from '../components/IframeBoot.svelte'
     <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <title>WBAV</title>
-
-    <style>
-      html[data-wbav-boot='pending'] {
-        visibility: hidden;
-        opacity: 0;
-      }
-
-      html {
-        transition: opacity 120ms ease;
-      }
-    </style>
-
-    <style is:inline set:html={`${tokensCss}\n${iframeCss}`}></style>
   </head>
 
   <body>
-    <div class='terminal'>
-      <div class='terminal__inner'>
-        <h1 class='sr-only'>Web Bot Auth Verification v0.0.1</h1>
-        <div class='terminal__figlet' aria-hidden='true'></div>
-        <pre
-          class='terminal__boot'><b style="color: var(--ansi-dim)">Test your bot?&nbsp;</b>[Y]/n<span class="cursor" />
-        </pre>
-      </div>
-      <div class='static' aria-hidden='true'></div>
-    </div>
-
-    <IframeBoot client:load />
+    <TerminalEmbed client:load />
   </body>
 </html>
