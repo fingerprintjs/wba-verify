@@ -16,9 +16,10 @@ html {
 }
 
 body {
+  height: 100vh;
+  background-color: black;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  height: 100vh;
 }
 
 pre {
@@ -84,13 +85,14 @@ strong {
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(var(--terminal__inner-bg) 90%, transparent),
+    radial-gradient(var(--terminal__inner-bg) 80%, transparent),
     linear-gradient(to bottom, rgb(255 255 255 / 0%), rgb(255 255 255 / 5%) 50%, rgb(0 0 0 / 5%) 70%, rgb(0 0 0 / 5%));
-  border: 0.5px solid rgba(255, 255, 255, 0.1);
-  pointer-events: none;
   background-size:
     100%,
     100% 4px;
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: inherit;
+  pointer-events: none;
 }
 
 .terminal__figlet {
@@ -106,6 +108,8 @@ strong {
 }
 
 .terminal__boot {
+  padding: 8px;
+  border: 1px solid transparent;
   word-break: break-all;
   white-space: pre-wrap;
 }
@@ -131,6 +135,7 @@ strong {
 }
 
 @keyframes blink {
+
   0%,
   50% {
     opacity: 1;
@@ -202,6 +207,7 @@ strong {
 
 /* FLICKER EFFECT */
 @keyframes flicker {
+
   0%,
   25%,
   75% {

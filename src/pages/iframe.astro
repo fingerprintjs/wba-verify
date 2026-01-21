@@ -1,5 +1,6 @@
 ---
-import IframeBoot from '../components/IframeBoot.svelte'
+import TerminalEmbed from '../components/TerminalEmbed.svelte'
+import '../styles/iframe.css'
 ---
 
 <!doctype html>
@@ -11,16 +12,6 @@ import IframeBoot from '../components/IframeBoot.svelte'
   </head>
 
   <body>
-    <div class='terminal'>
-      <div class='terminal__inner'>
-        <h1 class='sr-only'>Web Bot Auth Verification v0.0.1</h1>
-        <div class='terminal__figlet' aria-hidden='true'></div>
-        <pre
-          class='terminal__boot'><b style="color: var(--ansi-dim)">Test your bot?&nbsp;</b>[Y]/n<span class="cursor" /></pre>
-      </div>
-      <div class='static' aria-hidden='true'></div>
-    </div>
-
-    <IframeBoot client:only="svelte" />
+    <TerminalEmbed client:load />
   </body>
 </html>
