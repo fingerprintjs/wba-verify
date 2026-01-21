@@ -1,6 +1,4 @@
 ---
-import iframeCss from '../iframe/styles.css?inline'
-import tokensCss from '../styles/tokens.css?inline'
 import IframeBoot from '../components/IframeBoot.svelte'
 ---
 
@@ -10,22 +8,6 @@ import IframeBoot from '../components/IframeBoot.svelte'
     <meta charset='utf-8' />
     <meta name='viewport' content='width=device-width, initial-scale=1' />
     <title>WBAV</title>
-
-    <style>
-      /* Default visible state */
-      html {
-        visibility: visible;
-        opacity: 1;
-      }
-
-      /* Hide only while boot is pending */
-      html[data-wbav-boot='pending'] {
-        visibility: hidden;
-        opacity: 0;
-      }
-    </style>
-
-    <style is:inline set:html={`${tokensCss}\n${iframeCss}`}></style>
   </head>
 
   <body>
@@ -39,6 +21,6 @@ import IframeBoot from '../components/IframeBoot.svelte'
       <div class='static' aria-hidden='true'></div>
     </div>
 
-    <IframeBoot client:load />
+    <IframeBoot client:only="svelte" />
   </body>
 </html>
