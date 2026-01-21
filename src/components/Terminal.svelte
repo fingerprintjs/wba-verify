@@ -173,6 +173,8 @@
 
 <style>
   .terminal__boot {
+    padding: 8px;
+    border: 1px solid transparent;
     word-break: break-all;
     white-space: pre-wrap;
   }
