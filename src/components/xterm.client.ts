@@ -8,9 +8,7 @@ import { varValue } from '../utils/cssVar.ts'
 import { debounce } from '../utils/debounce.ts'
 import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
 
-// Define consts
-export const CURL_ENDPOINT_URL = 'https://webbotauth-api.fpjs.io/api/verify'
-export const WBAV_DOCS_URL = 'https://docs.fingerprint.com/docs/web-bot-authentication'
+import { CURL_ENDPOINT_URL, FINGERPRINT_DASHBOARD_ROOT, SUBMIT_BOT_URL } from '../constants.ts'
 
 const ANSI = {
   reset: '\x1b[0m',
@@ -158,14 +156,14 @@ export async function copyCommand(_args: string[], term: Xterm.Terminal) {
   }
 }
 
-function docsCommand(_args: string[], term: Xterm.Terminal) {
-  window.open(WBAV_DOCS_URL, '_blank', 'noopener,noreferrer')
-  term.writeln(`${ANSI.fg.dim}Opened docs in a new tab${ANSI.reset}`)
-}
+// TODO: add docs command once it is live
+// function docsCommand(_args: string[], term: Xterm.Terminal) {
+//   window.open(WBAV_DOCS_URL, '_blank', 'noopener,noreferrer')
+//   term.writeln(`${ANSI.fg.dim}Opened docs in a new tab${ANSI.reset}`)
+// }
 
 function fpCommand(_args: string[], term: Xterm.Terminal) {
-  const url = 'https://fingerprint.com'
-  window.open(url, '_blank', 'noopener,noreferrer')
+  window.open(FINGERPRINT_DASHBOARD_ROOT, '_blank', 'noopener,noreferrer')
   term.writeln(`${ANSI.fg.dim}Opened fingerprint.com in a new tab${ANSI.reset}`)
 }
 
@@ -243,7 +241,7 @@ function promptAfterSuccess(term: Xterm.Terminal) {
     question: 'Submit your bot',
     description: '(opens dashboard.fingerprint.com)',
     onYes: (t) => {
-      window.open(WBAV_DOCS_URL, '_blank', 'noopener,noreferrer')
+      window.open(SUBMIT_BOT_URL, '_blank', 'noopener,noreferrer')
       t.write(`\r\n${ANSI.fg.dim}Opened docs in a new tab.${ANSI.reset}`)
     },
     onNo: (t) => {

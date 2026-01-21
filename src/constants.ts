@@ -1,4 +1,10 @@
+// API endpoints
+export const CURL_ENDPOINT_URL = 'https://webbotauth-api.fpjs.io/api/verify'
+
 // URLs
+export const FINGERPRINT_DASHBOARD_ROOT = 'https://dashboard.fingerprint.com'
+export const SUBMIT_BOT_URL = `${FINGERPRINT_DASHBOARD_ROOT}/submit-bot`
+
 export const GITHUB_REPO_URL = 'https://github.com/fingerprintjs/wba-verify'
 export const WBA_SPEC_URL = 'https://datatracker.ietf.org/wg/webbotauth/about/'
 

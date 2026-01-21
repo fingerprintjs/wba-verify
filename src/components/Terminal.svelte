@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
-  import { CURL_ENDPOINT_URL, mountXterm } from './xterm.client'
-  import { FIGLET, WBA_SPEC_URL } from '../constants'
+  import { mountXterm } from './xterm.client'
+  import { FIGLET, CURL_ENDPOINT_URL, WBA_SPEC_URL } from '../constants'
 
   import { spinnerEl, type Spinner } from './spinner'
 
