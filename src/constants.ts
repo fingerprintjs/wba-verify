@@ -8,10 +8,6 @@ export const SUBMIT_BOT_URL = `${FINGERPRINT_DASHBOARD_ROOT}/submit-bot`
 export const GITHUB_REPO_URL = 'https://github.com/fingerprintjs/wba-verify'
 export const WBA_SPEC_URL = 'https://datatracker.ietf.org/wg/webbotauth/about/'
 
-// Figlet banner for terminal
-export const FIGLET =
-  '██╗    ██╗██████╗  █████╗ ██╗   ██╗\n██║    ██║██╔══██╗██╔══██╗██║   ██║\n██║ █╗ ██║██████╔╝███████║██║   ██║\n██║███╗██║██╔══██╗██╔══██║╚██╗ ██╔╝\n╚███╔███╔╝██████╔╝██║  ██║ ╚████╔╝ \n ╚══╝╚══╝ ╚═════╝ ╚═╝  ╚═╝  ╚═══╝  \n WEB BOT AUTH VERIFICATION v0.0.1'
-
 // Error messages for WBAV test
 export const WBAV_ERROR_MESSAGES: Record<string, string> = {
   MISSING_SIGNATURE_HEADERS: 'Missing required signature headers: Signature, Signature-Input, and Signature-Agent.',
@@ -27,3 +23,7 @@ export const WBAV_ERROR_MESSAGES: Record<string, string> = {
   VALIDATION_FAILED: 'Generic validation failure (catch-all).',
   INTERNAL_ERROR: 'Internal server error.',
 }
+
+// Misc
+export const VERSION = '1.0.0'
+export const FIGLET = `██╗    ██╗██████╗  █████╗ ██╗   ██╗\n██║    ██║██╔══██╗██╔══██╗██║   ██║\n██║ █╗ ██║██████╔╝███████║██║   ██║\n██║███╗██║██╔══██╗██╔══██║╚██╗ ██╔╝\n╚███╔███╔╝██████╔╝██║  ██║ ╚████╔╝ \n ╚══╝╚══╝ ╚═════╝ ╚═╝  ╚═╝  ╚═══╝  \n WEB BOT AUTH VERIFICATION v${VERSION}`

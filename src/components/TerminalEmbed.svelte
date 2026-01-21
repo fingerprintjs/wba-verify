@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { FIGLET } from '../constants'
+  import { FIGLET, VERSION } from '../constants'
 
   // Figlet banner
   const figletLines = FIGLET.split('\n').map((line) => (line.length === 0 ? '\u00A0' : line))
@@ -7,7 +7,7 @@
 
 <div class="terminal">
   <div class="terminal__inner">
-    <h1 class="sr-only">Web Bot Auth Verification v0.0.1</h1>
+    <h1 class="sr-only">Web Bot Auth Verification v{VERSION}</h1>
     <!-- Banner -->
     <div class="terminal__figlet" aria-hidden="true">
       {#each figletLines as line, i}
