@@ -7,10 +7,11 @@ import { isMuted } from '../stores/audio.ts'
 import { varValue } from '../utils/cssVar.ts'
 import { debounce } from '../utils/debounce.ts'
 import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
+import { renderWbavResult } from '../utils/wbavMessagesUtils.ts'
 
 import { CURL_ENDPOINT_URL, FINGERPRINT_DASHBOARD_ROOT, SUBMIT_BOT_URL } from '../constants.ts'
 
-const ANSI = {
+export const ANSI = {
   reset: '\x1b[0m',
   bold: '\x1b[1m',
   fg: {
@@ -19,6 +20,7 @@ const ANSI = {
     green: '\x1b[38;2;89;243;34m',
     blue: '\x1b[38;2;34;213;243m',
     red: '\x1b[38;2;243;34;121m',
+    yellow: '\x1b[38;2;243;193;34m',
     orange: '\x1b[38;2;243;88;32m',
     white: '\x1b[38;2;255;221;200m',
     black: '\x1b[38;2;0;0;0m',
@@ -26,6 +28,7 @@ const ANSI = {
   bg: {
     red: '\x1b[48;2;243;34;121m',
     green: '\x1b[48;2;89;243;34m',
+    yellow: '\x1b[48;2;243;193;34m',
   },
 }
 
@@ -227,8 +230,6 @@ async function retryCommand(_args: string[], term: Xterm.Terminal) {
 function promptAfterSuccess(term: Xterm.Terminal) {
   term.write('\r\n')
 
-  term.writeln(`${ANSI.bg.green}${ANSI.fg.black}Verification OK${ANSI.reset}`)
-  term.writeln('')
   term.writeln(`${ANSI.fg.green}Your bot request was verified using Web Bot Auth standard.${ANSI.reset}`)
   term.writeln('')
   term.writeln(
@@ -422,23 +423,13 @@ export function mountXterm(el: HTMLElement) {
       case 'error':
         spinner?.stop()
         spinner = null
+        renderWbavResult(t, v)
 
-        if (!hasBooted) {
-          hasBooted = true
-
-          t.write('\r\n')
-
-          if (v.status === 'success') {
-            promptAfterSuccess(t)
-          } else {
-            t.writeln(
-              `\r\n${ANSI.bg.red}${ANSI.fg.white}Verification Failed${ANSI.reset}\r\n\n${ANSI.fg.red}${v.error ?? ''}${ANSI.reset}`
-            )
-          }
-
-          t.write(`\r\n${PROMPT}`)
+        if (v.status === 'success') {
+          promptAfterSuccess(t)
         }
 
+        t.write(`\r\n${PROMPT}`)
         break
     }
   })
