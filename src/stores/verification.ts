@@ -33,7 +33,7 @@ type RunWBAVTestResult = RunWBAVTestSuccess | RunWBAVTestError
 function formatWbavError(e: VerificationErrorItem): string {
   if (e && typeof e === 'object') {
     const code = e.code != null ? String(e.code) : null
-    const mapped = code ? WBAV_MESSAGES[code].body : null
+    const mapped = code ? e.message : null
     const message = e.message != null ? String(e.message) : null
     return mapped ?? message ?? 'Unknown error'
   }
