@@ -21,8 +21,9 @@ import '../styles/global.css'
 </Layout>
 
 <script>
+  import { GITHUB_REPO_URL } from '../constants.js'
   console.log(
-    "Hi there, welcome to %cFingerprint WBAV%c :) \n\nGitHub:       https://github.com/fingerprintjs/wba-verify \n\n%cWe're hiring: https://fingerprint.com/careers",
+    `Hi there, welcome to %cFingerprint WBAV%c :) \n\nGitHub:       ${GITHUB_REPO_URL} \n\n%cWe're hiring: https://fingerprint.com/careers`,
     'font-weight: bold;',
     'font-weight: normal;',
     'color: #f35b22;'
@@ -65,5 +66,12 @@ import '../styles/global.css'
       transparent 2px,
       transparent 6px
     );
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    #logo {
+      display: none;
+    }
   }
 </style>
