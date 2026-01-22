@@ -3,6 +3,7 @@
   import { verification } from '../stores/verification'
   import { mountXterm } from './xterm.client'
   import { FIGLET, CURL_ENDPOINT_URL, WBA_SPEC_URL } from '../constants'
+  import { getSeverity, type Severity } from './../utils/wbavMessagesUtils.ts'
 
   import { spinnerEl, type Spinner } from './spinner'
 
@@ -42,6 +43,27 @@
     ? `${statusText[0]} ${'/'.repeat(Math.max(0, 50 - statusText[0].length))} ` +
       `${statusText[1]} ${'/'.repeat(Math.max(0, 50 - statusText[1].length))}`
     : ''
+
+  let lastSeverity: Severity | null = null
+
+  $: severity = (() => {
+    const next: Severity | null =
+      $verification.status === 'success' || $verification.status === 'error'
+        ? getSeverity($verification)
+        : null
+
+    if (next) lastSeverity = next
+    return $verification.status === 'pending' ? lastSeverity : next
+  })()
+
+  $: statusClass =
+    severity === 'success'
+      ? 'terminal__status--success'
+      : severity === 'error'
+        ? 'terminal__status--error'
+        : severity === 'warning'
+          ? 'terminal__status--warning'
+          : ''
 
   // API response text
   $: apiText = $verification?.raw
@@ -119,7 +141,7 @@
     {#if hasBooted}
       <!-- Verification status -->
       {#if $verification.status !== 'idle'}
-        <div class="terminal__status {$verification.status === 'success' ? 'terminal__status--success' : ''}">
+        <div class={`terminal__status ${statusClass}`}>
           <div class="terminal__status-inner">
             <div class="terminal__status-marquee">
               <pre style:opacity={$verification.status === 'pending' ? '0.5' : ''}>{statusLine}</pre>
@@ -241,11 +263,28 @@
       inset 0 0 1px 0 var(--ansi-red),
       0 0 1px 0 var(--ansi-red);
   }
+  /* 200 */
   .terminal__status--success {
     border-color: var(--ansi-green);
     box-shadow:
-      inset 0 0 1px 0 var(--ansi-green),
-      0 0 1px 0 var(--ansi-green);
+            inset 0 0 1px 0 var(--ansi-green),
+            0 0 1px 0 var(--ansi-green);
+  }
+
+  /* 400 */
+  .terminal__status--warning {
+      border-color: var(--ansi-yellow);
+      box-shadow:
+              inset 0 0 1px 0 var(--ansi-yellow),
+              0 0 1px 0 var(--ansi-yellow);
+  }
+
+  /* 500 */
+  .terminal__status--error {
+      border-color: var(--ansi-red);
+      box-shadow:
+              inset 0 0 1px 0 var(--ansi-red),
+              0 0 1px 0 var(--ansi-red);
   }
   .terminal__status-inner {
     display: inherit;
@@ -268,6 +307,15 @@
   .terminal__status--success .terminal__status-marquee pre {
     color: var(--ansi-green);
     text-shadow: 0 0px 6px var(--ansi-green);
+  }
+  .terminal__status--warning .terminal__status-marquee pre {
+    color: var(--ansi-yellow);
+    text-shadow: 0 0px 6px var(--ansi-yellow);
+  }
+
+  .terminal__status--error .terminal__status-marquee pre {
+    color: var(--ansi-red);
+    text-shadow: 0 0px 6px var(--ansi-red);
   }
 
   /* TERMINAL PANES */

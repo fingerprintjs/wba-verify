@@ -3,7 +3,7 @@ import { WBAV_MESSAGES } from '../constants.ts'
 import type { VerificationState } from '../stores/verification.ts'
 import { ANSI } from '../components/xterm.client.ts'
 
-type Severity = 'success' | 'warning' | 'error'
+export type Severity = 'success' | 'warning' | 'error'
 
 type WbavStyle = {
   symbol: string
@@ -32,7 +32,7 @@ export function renderWbavResult(term: Xterm.Terminal, v: VerificationState) {
   term.writeln(`${styles.bodyFg}${msg.body}${ANSI.reset}`)
 }
 
-function getSeverity(v: VerificationState): Severity {
+export function getSeverity(v: VerificationState): Severity {
   if (v.status === 'success') return 'success'
   return v.errorCode === 'INTERNAL_ERROR' ? 'error' : 'warning'
 }
