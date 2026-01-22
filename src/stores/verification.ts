@@ -1,6 +1,6 @@
 import { get, writable } from 'svelte/store'
 import { runWBAVTest } from '../utils/runWBAVTest.ts'
-import { WBAV_ERROR_MESSAGES } from '../constants.ts'
+import { WBAV_MESSAGES } from '../constants.ts'
 
 type VerificationErrorItem = {
   code: string
@@ -33,7 +33,7 @@ type RunWBAVTestResult = RunWBAVTestSuccess | RunWBAVTestError
 function formatWbavError(e: VerificationErrorItem): string {
   if (e && typeof e === 'object') {
     const code = e.code != null ? String(e.code) : null
-    const mapped = code ? WBAV_ERROR_MESSAGES[code] : null
+    const mapped = code ? WBAV_MESSAGES[code].body : null
     const message = e.message != null ? String(e.message) : null
     return mapped ?? message ?? 'Unknown error'
   }
@@ -43,12 +43,14 @@ function formatWbavError(e: VerificationErrorItem): string {
 export type VerificationState = {
   status: 'idle' | 'pending' | 'success' | 'error'
   raw: unknown | null
+  errorCode: string | null
   error: string | null
 }
 
 const initialState: VerificationState = {
   status: 'idle',
   raw: null,
+  errorCode: null,
   error: null,
 }
 
@@ -74,6 +76,7 @@ function createVerification() {
         set({
           status: 'success',
           raw: result.details,
+          errorCode: null,
           error: null,
         })
       } else {
@@ -83,6 +86,7 @@ function createVerification() {
         set({
           status: 'error',
           raw: result.raw,
+          errorCode: errors[0]?.code,
           error: errorText,
         })
       }
@@ -92,6 +96,7 @@ function createVerification() {
       set({
         status: 'error',
         raw: null,
+        errorCode: 'WBAV_ERROR',
         error: err instanceof Error ? err.message : String(err),
       })
     }

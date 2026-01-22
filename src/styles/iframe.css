@@ -132,7 +132,6 @@ strong {
 }
 
 @keyframes blink {
-
   0%,
   50% {
     opacity: 1;
@@ -204,7 +203,6 @@ strong {
 
 /* FLICKER EFFECT */
 @keyframes flicker {
-
   0%,
   25%,
   75% {
