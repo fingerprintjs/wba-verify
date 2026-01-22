@@ -237,6 +237,10 @@ button {
   .md\:inline {
     display: inline;
   }
+
+  .btn {
+    font-size: 12px;
+  }
 }
 
 @media (min-width: 1024px) {

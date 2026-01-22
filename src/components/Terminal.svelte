@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
-  import { mountXterm } from './xterm.client'
+  import { executeXtermCommand, focusXterm, mountXterm } from './xterm.client'
   import { FIGLET, CURL_ENDPOINT_URL, WBA_SPEC_URL } from '../constants'
   import { getSeverity, type Severity } from './../utils/wbavMessagesUtils.ts'
 
@@ -20,6 +20,12 @@
   $: if (xtermEl && !xtermMounted) {
     mountXterm(xtermEl)
     xtermMounted = true
+  }
+
+  // xterm.js terminal should be focused after button clicks
+  function handleCommand(command: string) {
+    executeXtermCommand(command)
+    focusXterm()
   }
 
   // Status text
@@ -120,9 +126,10 @@
         <code>&nbsp;</code>
         <code>&nbsp;</code>
         <code style="--i:3"
-        >Real cryptographic verification for <a href={WBA_SPEC_URL} target="_blank">Web Bot Auth</a> </code>
+        >Real cryptographic verification for <a href={WBA_SPEC_URL} target="_blank">Web Bot Auth</a> </code
+      >
         <code style="--i:4">using RFC 9421 HTTP Message Signatures </code>
-      </pre>
+    </pre>
 
     <!-- If JavaScript is disabled -->
     <noscript>
@@ -180,9 +187,13 @@
       </div>
       <!-- Terminal commands -->
       <ul class="terminal__commands">
-        <li><pre>[c] Copy Response</pre></li>
-        <li class="hidden md:inline"><pre>[r] Retry</pre></li>
-        <li><pre>[help] List Commands</pre></li>
+        <li><button onclick={() => handleCommand('c')}>[c] Copy Response</button></li>
+        <li class="hidden md:inline"><button onclick={() => handleCommand('r')}>[r] Retry</button></li>
+        <li>
+          <button onclick={() => handleCommand('help')}
+            >[help] <span class="hidden md:inline">List&nbsp;</span>Commands</button
+          >
+        </li>
         <li class="hidden md:inline ml-auto"><pre>{date}</pre></li>
       </ul>
     {/if}
@@ -357,6 +368,16 @@
     user-select: none;
   }
 
+  .terminal__commands button {
+    line-height: normal;
+    letter-spacing: -0.025em;
+    font-size: 14px;
+    font-family: var(--terminal-font-family);
+    text-shadow: 0 0px 6px currentColor;
+    white-space: nowrap;
+  }
+
+  .terminal__commands button,
   .terminal__commands pre {
     color: var(--ansi-dim);
   }
@@ -364,9 +385,6 @@
   /* TERMINAL TEXT */
   .terminal .terminal__figlet,
   .terminal .terminal__meta {
-    color: var(--terminal-text-primary);
-    font-family: var(--terminal-font-family);
-    font-size: 14px;
     white-space: pre;
     margin-bottom: 16px;
   }
@@ -564,6 +582,10 @@
   @media (max-width: 768px) {
     .terminal__meta {
       display: none;
+    }
+    .terminal__response-human,
+    .terminal__response-bot {
+      gap: 4px;
     }
   }
   @media (max-width: 1024px) {
