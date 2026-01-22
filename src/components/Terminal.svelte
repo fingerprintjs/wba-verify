@@ -590,7 +590,7 @@
   }
   @media (max-width: 1024px) {
     .terminal {
-      height: 100dvh;
+      height: 100svh;
     }
 
     .terminal__response {
