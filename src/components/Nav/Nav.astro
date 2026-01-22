@@ -1,15 +1,15 @@
 ---
 import NavActions from './NavActions.svelte'
-import { GITHUB_REPO_URL } from '../../constants.js'
+import { FINGERPRINT_HOMEPAGE_URL, GITHUB_REPO_URL, SUBMIT_BOT_URL } from '../../constants.js'
 ---
 
-<nav class='navbar' role="navigation">
+<nav class='navbar' role='navigation'>
   <ul class='navbar-nav mr-auto'>
-    <li><a href='/'>Fingerprint.com</a></li>
+    <li><a href={FINGERPRINT_HOMEPAGE_URL}>Fingerprint.com</a></li>
     <li class='hidden md:inline'><a href={GITHUB_REPO_URL}>GitHub</a></li>
     <!-- TODO: add docs link once it is live -->
     <!-- <li class='hidden md:inline'><a href='/'>Docs</a></li> -->
-    <li class='hidden md:inline'><a href='/'>Submit your bot</a></li>
+    <li class='hidden md:inline'><a href={SUBMIT_BOT_URL}>Submit your bot</a></li>
     <li class='md:hidden'>
       <a href={GITHUB_REPO_URL} aria-label='github.com'>
         <svg
@@ -94,10 +94,6 @@ import { GITHUB_REPO_URL } from '../../constants.js'
   @media (max-width: 768px) {
     .navbar {
       padding: 0 calc(var(--bezel) + 3px);
-    }
-
-    a {
-      font-size: 12px;
     }
   }
 </style>

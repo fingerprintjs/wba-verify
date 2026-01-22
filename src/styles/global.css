@@ -73,7 +73,7 @@ button {
   height: 24px;
 
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
   text-decoration: none;
 
@@ -236,10 +236,6 @@ button {
 
   .md\:inline {
     display: inline;
-  }
-
-  .btn {
-    font-size: 11px;
   }
 }
 
