@@ -176,6 +176,10 @@ button {
 }
 
 @media (min-width: 768px) {
+  .md\:hidden {
+    display: none;
+  }
+
   .md\:inline {
     display: inline;
   }
@@ -237,6 +241,7 @@ button {
 
 /* ANIMATIONS */
 @keyframes blink {
+
   0%,
   50% {
     opacity: 1;
@@ -248,6 +253,7 @@ button {
 }
 
 @keyframes flicker {
+
   0%,
   25%,
   75% {
