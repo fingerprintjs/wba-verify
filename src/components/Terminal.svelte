@@ -48,9 +48,7 @@
 
   $: severity = (() => {
     const next: Severity | null =
-      $verification.status === 'success' || $verification.status === 'error'
-        ? getSeverity($verification)
-        : null
+      $verification.status === 'success' || $verification.status === 'error' ? getSeverity($verification) : null
 
     if (next) lastSeverity = next
     return $verification.status === 'pending' ? lastSeverity : next
@@ -257,34 +255,27 @@
 
   /* TERMINAL VERIFICATION STATUS */
   .terminal__status {
+    --ansi: var(--ansi-yellow);
     margin-bottom: 16px;
-    border: 1px solid var(--ansi-red);
+    border: 1px solid var(--ansi);
     box-shadow:
-      inset 0 0 1px 0 var(--ansi-red),
-      0 0 1px 0 var(--ansi-red);
+      inset 0 0 1px 0 var(--ansi),
+      0 0 1px 0 var(--ansi);
   }
+
   /* 200 */
   .terminal__status--success {
-    border-color: var(--ansi-green);
-    box-shadow:
-            inset 0 0 1px 0 var(--ansi-green),
-            0 0 1px 0 var(--ansi-green);
+    --ansi: var(--ansi-green);
   }
 
   /* 400 */
   .terminal__status--warning {
-      border-color: var(--ansi-yellow);
-      box-shadow:
-              inset 0 0 1px 0 var(--ansi-yellow),
-              0 0 1px 0 var(--ansi-yellow);
+    --ansi: var(--ansi-yellow);
   }
 
   /* 500 */
   .terminal__status--error {
-      border-color: var(--ansi-red);
-      box-shadow:
-              inset 0 0 1px 0 var(--ansi-red),
-              0 0 1px 0 var(--ansi-red);
+    --ansi: var(--ansi-red);
   }
   .terminal__status-inner {
     display: inherit;
@@ -301,21 +292,8 @@
   }
 
   .terminal__status-marquee pre {
-    color: var(--ansi-red);
-    text-shadow: 0 0px 6px var(--ansi-red);
-  }
-  .terminal__status--success .terminal__status-marquee pre {
-    color: var(--ansi-green);
-    text-shadow: 0 0px 6px var(--ansi-green);
-  }
-  .terminal__status--warning .terminal__status-marquee pre {
-    color: var(--ansi-yellow);
-    text-shadow: 0 0px 6px var(--ansi-yellow);
-  }
-
-  .terminal__status--error .terminal__status-marquee pre {
-    color: var(--ansi-red);
-    text-shadow: 0 0px 6px var(--ansi-red);
+    color: var(--ansi);
+    text-shadow: 0 0px 6px currentColor;
   }
 
   /* TERMINAL PANES */

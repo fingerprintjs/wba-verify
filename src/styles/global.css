@@ -18,7 +18,7 @@ body {
 body {
   background-color: hsl(var(--color-gray-2));
   background-attachment: fixed;
-  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.07);
+  box-shadow: inset 0 0 12px 4px hsl(var(--color-gray-3));
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -83,7 +83,12 @@ button {
   cursor: pointer;
 }
 
-.btn svg {
+.btn.btn--square {
+  width: 24px;
+  padding: 0;
+}
+
+.btn:not(.btn--square) svg {
   margin-right: 6px;
 }
 
@@ -175,18 +180,6 @@ button {
   display: none;
 }
 
-@media (min-width: 768px) {
-  .md\:inline {
-    display: inline;
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:hidden {
-    display: none;
-  }
-}
-
 .overflow-y-auto {
   overflow-y: auto;
 }
@@ -235,8 +228,26 @@ button {
   color: hsl(var(--color-gray-7));
 }
 
+/* RESPONSIVE */
+@media (min-width: 768px) {
+  .md\:hidden {
+    display: none;
+  }
+
+  .md\:inline {
+    display: inline;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:hidden {
+    display: none;
+  }
+}
+
 /* ANIMATIONS */
 @keyframes blink {
+
   0%,
   50% {
     opacity: 1;
@@ -248,6 +259,7 @@ button {
 }
 
 @keyframes flicker {
+
   0%,
   25%,
   75% {

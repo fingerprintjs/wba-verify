@@ -6,7 +6,6 @@ import { ANSI } from '../components/xterm.client.ts'
 export type Severity = 'success' | 'warning' | 'error'
 
 type WbavStyle = {
-  symbol: string
   titleFg: string
   titleBg: string
   bodyFg: string
@@ -27,7 +26,7 @@ export function renderWbavResult(term: Xterm.Terminal, v: VerificationState) {
   const styles = stylesFor(severity)
 
   term.writeln('')
-  term.writeln(`${styles.titleBg}${styles.titleFg}${ANSI.bold}${styles.symbol} ${msg.title} ${ANSI.reset}`)
+  term.writeln(`${styles.titleBg}${styles.titleFg}${msg.title}${ANSI.reset}`)
   term.writeln('')
   term.writeln(`${styles.bodyFg}${msg.body}${ANSI.reset}`)
 }
@@ -41,21 +40,18 @@ function stylesFor(sev: Severity): WbavStyle {
   switch (sev) {
     case 'success':
       return {
-        symbol: '✔',
         titleFg: ANSI.fg.black,
         titleBg: ANSI.bg.green,
         bodyFg: ANSI.fg.green,
       }
     case 'warning':
       return {
-        symbol: '!',
         titleFg: ANSI.fg.black,
         titleBg: ANSI.bg.yellow,
         bodyFg: ANSI.fg.yellow,
       }
     case 'error':
       return {
-        symbol: 'X',
         titleFg: ANSI.fg.white,
         titleBg: ANSI.bg.red,
         bodyFg: ANSI.fg.red,

@@ -42,6 +42,7 @@
 </script>
 
 <ul class="navbar-nav navbar-nav--no-js">
+  <!-- Copy response button -->
   <li>
     <button class="btn btn--primary" onclick={(e) => handleCommand('c')}>
       <svg
@@ -64,17 +65,10 @@
     </button>
   </li>
 
-  <li>
-    <button class="btn btn--primary-outline rounded-none" onclick={(e) => handleCommand('r')}>
-      <svg
-        aria-hidden="true"
-        width="12"
-        height="12"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        class="hidden md:inline"
-      >
+  <!-- Desktop retry button -->
+  <li class="hidden md:inline">
+    <button aria-label="Retry" class="btn btn--primary-outline" onclick={(e) => handleCommand('r')}>
+      <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
           fill-rule="evenodd"
           clip-rule="evenodd"
@@ -82,10 +76,30 @@
           fill="currentColor"
         />
       </svg>
-      Retry<span class="hidden md:inline">&nbsp;[R]</span>
+      Retry [R]
     </button>
   </li>
 
+  <!-- Mobile retry button -->
+  <li class="md:hidden">
+    <button
+      aria-label="Retry"
+      class="btn btn--primary-outline btn--square"
+      style="border-top-right-radius: 2px; border-bottom-right-radius: 2px;"
+      onclick={(e) => handleCommand('r')}
+    >
+      <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M18 20H12V18H18V20ZM20 18H18V16H20V18ZM8 12H10V14H8V16H6V14H4V12H6V8H8V12ZM22 16H20V8H22V16ZM4 12H2V10H4V12ZM12 12H10V10H12V12ZM10 8H8V6H10V8ZM20 8H18V6H20V8ZM18 6H10V4H18V6Z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
+  </li>
+
+  <!-- Mute button -->
   <li class="hidden md:inline">
     <button class="btn btn--primary-outline" onclick={handleMute}>
       <svg
@@ -129,6 +143,10 @@
 
   li:focus-within {
     z-index: 1;
+  }
+
+  li .btn {
+    border-radius: 0;
   }
 
   li:first-of-type .btn {
