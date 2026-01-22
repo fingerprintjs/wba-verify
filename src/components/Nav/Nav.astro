@@ -3,7 +3,7 @@ import NavActions from './NavActions.svelte'
 import { GITHUB_REPO_URL } from '../../constants.js'
 ---
 
-<nav class='navbar'>
+<nav class='navbar' role="navigation">
   <ul class='navbar-nav mr-auto'>
     <li><a href='/'>Fingerprint.com</a></li>
     <li class='hidden md:inline'><a href={GITHUB_REPO_URL}>GitHub</a></li>
@@ -94,6 +94,10 @@ import { GITHUB_REPO_URL } from '../../constants.js'
   @media (max-width: 768px) {
     .navbar {
       padding: 0 calc(var(--bezel) + 3px);
+    }
+
+    a {
+      font-size: 12px;
     }
   }
 </style>

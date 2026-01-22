@@ -73,7 +73,7 @@ button {
   height: 24px;
 
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   text-decoration: none;
 
@@ -239,7 +239,7 @@ button {
   }
 
   .btn {
-    font-size: 12px;
+    font-size: 11px;
   }
 }
 
