@@ -218,16 +218,14 @@ async function retryCommand(_args: string[], term: Xterm.Terminal) {
     })
   })
 
+  renderWbavResult(term, v)
+
   if (v.status === 'success') {
-    promptAfterSuccess(term)
-  } else {
-    term.writeln(
-      `\r\n${ANSI.bg.red}${ANSI.fg.white}Verification Failed${ANSI.reset}\r\n\n${ANSI.fg.red}${v.error ?? ''}${ANSI.reset}`
-    )
+    promptOnSuccess(term)
   }
 }
 
-function promptAfterSuccess(term: Xterm.Terminal) {
+function promptOnSuccess(term: Xterm.Terminal) {
   term.write('\r\n')
 
   term.writeln(`${ANSI.fg.green}Your bot request was verified using Web Bot Auth standard.${ANSI.reset}`)
@@ -346,6 +344,7 @@ async function dispatchCommand(input: string, term: Xterm.Terminal): Promise<voi
 
 // Terminal setup and mounting
 let term: Xterm.Terminal | null = null
+// Controls whether the terminal is mounted or not
 let hasBooted = false
 
 export function mountXterm(el: HTMLElement) {
@@ -423,13 +422,18 @@ export function mountXterm(el: HTMLElement) {
       case 'error':
         spinner?.stop()
         spinner = null
-        renderWbavResult(t, v)
 
-        if (v.status === 'success') {
-          promptAfterSuccess(t)
+        if (!hasBooted) {
+          hasBooted = true
+          renderWbavResult(t, v)
+
+          if (v.status === 'success') {
+            promptOnSuccess(t)
+          } else {
+            t.write(`\r\n${PROMPT}`)
+          }
         }
 
-        t.write(`\r\n${PROMPT}`)
         break
     }
   })
