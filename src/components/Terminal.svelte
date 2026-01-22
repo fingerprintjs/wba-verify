@@ -72,7 +72,7 @@
   // API response text
   $: apiText = $verification?.raw
     ? JSON.stringify($verification.raw, null, 2)
-    : "// No response. Type 'r' in the CLI to run the test."
+    : "No response. Type 'r' in the CLI to run the test."
 
   // Clock
   let date = ''
