@@ -17,7 +17,9 @@ export function resolveWbavMessage(v: VerificationState) {
   }
 
   const code = v.errorCode ?? 'VALIDATION_FAILED'
-  return WBAV_MESSAGES[code] ?? WBAV_MESSAGES.VALIDATION_FAILED
+  let wbvaFormattedMessage = WBAV_MESSAGES[code] ?? WBAV_MESSAGES.VALIDATION_FAILED
+  wbvaFormattedMessage.body = v.error ?? wbvaFormattedMessage.body
+  return wbvaFormattedMessage
 }
 
 export function renderWbavResult(term: Xterm.Terminal, v: VerificationState) {
