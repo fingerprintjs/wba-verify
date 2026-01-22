@@ -83,7 +83,12 @@ button {
   cursor: pointer;
 }
 
-.btn svg {
+.btn.btn--square {
+  width: 24px;
+  padding: 0;
+}
+
+.btn:not(.btn--square) svg {
   margin-right: 6px;
 }
 
@@ -175,22 +180,6 @@ button {
   display: none;
 }
 
-@media (min-width: 768px) {
-  .md\:hidden {
-    display: none;
-  }
-
-  .md\:inline {
-    display: inline;
-  }
-}
-
-@media (min-width: 1024px) {
-  .lg\:hidden {
-    display: none;
-  }
-}
-
 .overflow-y-auto {
   overflow-y: auto;
 }
@@ -237,6 +226,23 @@ button {
 
 .text-secondary {
   color: hsl(var(--color-gray-7));
+}
+
+/* RESPONSIVE */
+@media (min-width: 768px) {
+  .md\:hidden {
+    display: none;
+  }
+
+  .md\:inline {
+    display: inline;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:hidden {
+    display: none;
+  }
 }
 
 /* ANIMATIONS */
