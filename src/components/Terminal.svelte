@@ -126,8 +126,7 @@
         <code>&nbsp;</code>
         <code>&nbsp;</code>
         <code style="--i:3"
-        >Real cryptographic verification for <a href={WBA_SPEC_URL} target="_blank">Web Bot Auth</a> </code
-      >
+        >Real cryptographic verification for <a href={WBA_SPEC_URL} target="_blank">Web Bot Auth</a> </code>
         <code style="--i:4">using RFC 9421 HTTP Message Signatures </code>
     </pre>
 
@@ -238,6 +237,7 @@
     border: 0.5px solid rgba(255, 255, 255, 0.1);
     border-radius: inherit;
     pointer-events: none;
+    z-index: 1;
     /* animation: scanlines 1s linear 0s infinite normal none running; */
   }
 
@@ -262,6 +262,24 @@
     box-shadow:
       inset 0px -1px 4px rgba(255, 255, 255, 0.2),
       inset 0px 1px 4px rgba(255, 255, 255, 0.1);
+  }
+
+  /* TERMINAL FIGLET AND META DETAILS */
+  .terminal__figlet,
+  .terminal__meta {
+    z-index: 1; /* z-index is required to prevent a Safari 18.2 bug from applying a heavier blur */
+  }
+
+  .terminal__figlet {
+    align-self: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .terminal__meta {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    text-align: right;
   }
 
   /* TERMINAL VERIFICATION STATUS */
@@ -383,19 +401,6 @@
   }
 
   /* TERMINAL TEXT */
-  .terminal .terminal__figlet,
-  .terminal .terminal__meta {
-    white-space: pre;
-    margin-bottom: 16px;
-  }
-
-  .terminal__meta {
-    position: absolute;
-    top: 8px;
-    right: 12px;
-    text-align: right;
-  }
-
   pre,
   code {
     color: var(--terminal-text-primary);
@@ -404,6 +409,7 @@
     font-size: 14px;
     font-family: var(--terminal-font-family);
     text-shadow: 0 0px 6px currentColor;
+    -webkit-text-size-adjust: 100%;
   }
 
   .prose pre {
