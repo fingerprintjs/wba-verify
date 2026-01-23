@@ -3,10 +3,11 @@ import { FitAddon } from '@xterm/addon-fit'
 import '@xterm/xterm/css/xterm.css'
 import { spinnerXterm, type Spinner } from './spinner'
 import { verification, type VerificationState } from '../stores/verification.ts'
+import { get } from 'svelte/store'
 import { isMuted } from '../stores/audio.ts'
 import { varValue } from '../utils/cssVar.ts'
 import { debounce } from '../utils/debounce.ts'
-import WriteSoundUrl from '../assets/audio/xterm-write.mp3'
+import EnterKeySoundUrl from '../assets/audio/xterm-write.mp3'
 import { renderWbavResult } from '../utils/wbavMessagesUtils.ts'
 
 import { CURL_ENDPOINT_URL, FINGERPRINT_DASHBOARD_ROOT, SUBMIT_BOT_URL } from '../constants.ts'
@@ -400,13 +401,6 @@ export function mountXterm(el: HTMLElement) {
   // Write the intro
   t.write(INTRO)
 
-  // SFX
-  const writeSound = new Audio(WriteSoundUrl)
-  writeSound.preload = 'auto'
-  isMuted.subscribe((muted) => {
-    writeSound.muted = muted
-  })
-
   // Subscribe to verification store
   // Retry can be triggered by command or externally i.e. navbar
   let spinner: Spinner | null = null
@@ -456,7 +450,7 @@ export function mountXterm(el: HTMLElement) {
   }
 
   // on xterm data input
-  t.onData((data) => {
+  t.onData(async (data) => {
     switch (data) {
       case '\r': // Enter Key
         if (buffer.trim()) {
@@ -468,11 +462,12 @@ export function mountXterm(el: HTMLElement) {
           t.write(`\r\n${PROMPT}`)
           return
         }
-        if (writeSound) {
-          writeSound.currentTime = 0
-          writeSound.play().catch(() => {})
-        }
 
+        if (!get(isMuted)) {
+          await initAudio()
+          playEnterKeySound()
+        }
+        
         dispatchCommand(buffer, t)
         buffer = ''
         cursor = 0
@@ -566,4 +561,37 @@ export function executeXtermCommand(cmd: string) {
   if (!term) return
   term.write(`\x1b[2K\r${PROMPT}${ANSI.fg.dim}${cmd}${ANSI.reset}`)
   dispatchCommand(cmd, term)
+}
+
+// SFX
+let audioCtx: AudioContext | null = null
+let enterKeyBuffer: AudioBuffer | null = null
+
+async function initAudio() {
+  if (audioCtx) return
+
+  try {
+    // Create audio context
+    const AudioContext = window.AudioContext || (window as any).webkitAudioContext
+    audioCtx = new AudioContext()
+
+    // Load audio file data
+    const response = await fetch(EnterKeySoundUrl)
+    enterKeyBuffer = await audioCtx.decodeAudioData(await response.arrayBuffer())
+  } catch (err) {
+    console.warn('Web Audio API is not supported in this browser', err)
+  }
+}
+
+function playEnterKeySound() {
+  // Check if loaded, context exists, and not muted
+  if (!enterKeyBuffer || !audioCtx) return
+
+  // Create a new source node for every "tick" (lightweight)
+  const source = audioCtx.createBufferSource()
+  source.buffer = enterKeyBuffer
+
+  // Play instantly
+  source.connect(audioCtx.destination)
+  source.start(0)
 }

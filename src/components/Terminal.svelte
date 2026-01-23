@@ -1,9 +1,11 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
+  import { isMuted } from '../stores/audio.ts'
   import { executeXtermCommand, focusXterm, mountXterm } from './xterm.client'
   import { FIGLET, CURL_ENDPOINT_URL, WBA_SPEC_URL } from '../constants'
   import { getSeverity, type Severity } from './../utils/wbavMessagesUtils.ts'
+  import FigletSoundUrl from '../assets/audio/figlet-tick.mp3'
 
   import { spinnerEl, type Spinner } from './spinner'
 
@@ -13,6 +15,32 @@
   // Create loading spinner and xterm.js terminal
   let bootLoader: HTMLElement
   let spinner: Spinner | null = null
+
+  let audioCtx: AudioContext | null = null
+  let figletBuffer: AudioBuffer | null = null
+  let isAudioWarmedUp = false
+
+  // Figlet SFX
+  function handleFigletSound() {
+    // Check if loaded, context exists, and not muted
+    if (!isAudioWarmedUp || !figletBuffer || !audioCtx || $isMuted) return
+
+    // Create a new source node for every "tick" (lightweight)
+    const source = audioCtx.createBufferSource()
+    source.buffer = figletBuffer
+
+    const gainNode = audioCtx.createGain()
+
+    // Randomize volume for retro glitchiness
+    gainNode.gain.value = Math.random() * (0.125 - 0.025) + 0.025
+
+    // Connect source to the gain node and then to destination
+    source.connect(gainNode)
+    gainNode.connect(audioCtx.destination)
+
+    // Play instantly
+    source.start(0)
+  }
 
   let xtermEl: HTMLDivElement
   let xtermMounted = false
@@ -98,10 +126,41 @@
     }
   }
 
-  onMount(() => {
+  onMount(async () => {
+    // Start boot sequence with initial test
     spinner = spinnerEl(bootLoader, 'VERIFYING BOT...')
     verification.run(CURL_ENDPOINT_URL)
+
+    // Initialize date
     calculateEightiesDate()
+
+    // Audio API has an audible "pop" if triggered from mouseover.
+    // Listen for keydown event first and then enable audio by mouseover events.
+    // Set capture: true to listen for xterm keydown
+    window.addEventListener(
+      'keydown',
+      () => {
+        console.log('Warming up audio context')
+        isAudioWarmedUp = true
+        if (audioCtx?.state === 'suspended') {
+          audioCtx.resume()
+        }
+      },
+      { once: true, capture: true }
+    )
+
+    // Figlet SFX
+    try {
+      // Create audio context
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext
+      audioCtx = new AudioContext()
+
+      // Load audio file data
+      const response = await fetch(FigletSoundUrl)
+      figletBuffer = await audioCtx.decodeAudioData(await response.arrayBuffer())
+    } catch (err) {
+      console.warn('Web Audio API is not supported in this browser', err)
+    }
   })
 
   onDestroy(() => {
@@ -112,9 +171,9 @@
 <div class="terminal">
   <div class="terminal__inner">
     <!-- Banner -->
-    <div class="terminal__figlet" aria-hidden="true">
+    <div aria-hidden="true" class="terminal__figlet">
       {#each figletLines as line, i}
-        <pre class="terminal__figlet-line" style="--i:{i}">{line}</pre>
+        <pre class="terminal__figlet-line" style="--i:{i}" onmouseenter={handleFigletSound}>{line}</pre>
       {/each}
     </div>
 
