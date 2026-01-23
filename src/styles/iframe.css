@@ -102,7 +102,8 @@ strong {
   margin-bottom: 16px;
 }
 
-.terminal__figlet {
+.terminal__figlet,
+.terminal__boot {
   filter: blur(0.3px);
 }
 
