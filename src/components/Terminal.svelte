@@ -32,7 +32,7 @@
     const gainNode = audioCtx.createGain()
 
     // Randomize volume for retro glitchiness
-    gainNode.gain.value = Math.random() * (0.15 - 0.05) + 0.05
+    gainNode.gain.value = Math.random() * (0.125 - 0.025) + 0.025
 
     // Connect source to the gain node and then to destination
     source.connect(gainNode)
