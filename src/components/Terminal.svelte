@@ -409,8 +409,7 @@
     font-size: 14px;
     font-family: var(--terminal-font-family);
     text-shadow: 0 0px 6px currentColor;
-    -webkit-text-size-adjust: none;
-    text-size-adjust: none;
+    -webkit-text-size-adjust: 100%;
   }
 
   .prose pre {
