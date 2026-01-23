@@ -16,23 +16,30 @@
   let bootLoader: HTMLElement
   let spinner: Spinner | null = null
 
-  let figletSound: HTMLAudioElement | null = null
+  let audioCtx: AudioContext | null = null
+  let figletBuffer: AudioBuffer | null = null
+  let isAudioWarmedUp = false
 
-  // Subscribe to audio store for muting
-  $: if (figletSound) {
-    figletSound.muted = $isMuted
-  }
-
+  // Figlet SFX
   function handleFigletSound() {
-    if (!figletSound || figletSound.muted) return
+    // Check if loaded, context exists, and not muted
+    if (!isAudioWarmedUp || !figletBuffer || !audioCtx || $isMuted) return
 
-    // randomize volume for effect
-    const random = Math.random()
-    figletSound.volume = random * (0.4 - 0.2) + 0.2
-    figletSound.playbackRate = random * (1.25 - 0.5) + 0.5
+    // Create a new source node for every "tick" (lightweight)
+    const source = audioCtx.createBufferSource()
+    source.buffer = figletBuffer
 
-    figletSound.currentTime = 0
-    figletSound.play().catch(() => {})
+    const gainNode = audioCtx.createGain()
+
+    // Randomize volume for retro glitchiness
+    gainNode.gain.value = Math.random() * (0.15 - 0.05) + 0.05
+
+    // Connect source to the gain node and then to destination
+    source.connect(gainNode)
+    gainNode.connect(audioCtx.destination)
+
+    // Play instantly
+    source.start(0)
   }
 
   let xtermEl: HTMLDivElement
@@ -119,7 +126,7 @@
     }
   }
 
-  onMount(() => {
+  onMount(async () => {
     // Start boot sequence with initial test
     spinner = spinnerEl(bootLoader, 'VERIFYING BOT...')
     verification.run(CURL_ENDPOINT_URL)
@@ -127,9 +134,33 @@
     // Initialize date
     calculateEightiesDate()
 
+    // Audio API has an audible "pop" if triggered from mouseover.
+    // Listen for keydown event first and then enable audio by mouseover events.
+    // Set capture: true to listen for xterm keydown
+    window.addEventListener(
+      'keydown',
+      () => {
+        console.log('Warming up audio context')
+        isAudioWarmedUp = true
+        if (audioCtx?.state === 'suspended') {
+          audioCtx.resume()
+        }
+      },
+      { once: true, capture: true }
+    )
+
     // Figlet SFX
-    figletSound = new Audio(FigletSoundUrl)
-    figletSound.preload = 'auto'
+    try {
+      // Create audio context
+      const AudioContext = window.AudioContext || (window as any).webkitAudioContext
+      audioCtx = new AudioContext()
+
+      // Load audio file data
+      const response = await fetch(FigletSoundUrl)
+      figletBuffer = await audioCtx.decodeAudioData(await response.arrayBuffer())
+    } catch (err) {
+      console.warn('Web Audio API is not supported in this browser', err)
+    }
   })
 
   onDestroy(() => {
@@ -140,7 +171,7 @@
 <div class="terminal">
   <div class="terminal__inner">
     <!-- Banner -->
-    <div class="terminal__figlet" aria-hidden="true">
+    <div aria-hidden="true" class="terminal__figlet">
       {#each figletLines as line, i}
         <pre class="terminal__figlet-line" style="--i:{i}" onmouseenter={handleFigletSound}>{line}</pre>
       {/each}
