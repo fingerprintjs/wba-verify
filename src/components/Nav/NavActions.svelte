@@ -68,7 +68,7 @@
 
   <!-- Desktop retry button -->
   <li>
-    <button aria-label="Retry" class="btn btn--primary-outline" onclick={() => handleCommand('r')}>
+    <button class="btn btn--primary-outline" onclick={() => handleCommand('r')}>
       <svg
         aria-hidden="true"
         width="12"
@@ -91,7 +91,7 @@
 
   <!-- Mute button -->
   <li class="hidden md:inline">
-    <button class="btn btn--primary-outline" onclick={handleMute}>
+    <button aria-pressed={$isMuted} aria-label="Mute audio" class="btn btn--primary-outline" onclick={handleMute}>
       <svg
         aria-hidden="true"
         width="12"
