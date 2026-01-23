@@ -16,8 +16,8 @@ export function resolveWbavMessage(v: VerificationState) {
     return WBAV_MESSAGES.SUCCESS
   }
 
-  const code = v.errorCode ?? 'VALIDATION_FAILED'
-  let wbvaFormattedMessage = WBAV_MESSAGES[code] ?? WBAV_MESSAGES.VALIDATION_FAILED
+  const code = v.errorCode ?? 'VERIFICATION_FAILED'
+  let wbvaFormattedMessage = WBAV_MESSAGES[code] ?? WBAV_MESSAGES.VERIFICATION_FAILED
   wbvaFormattedMessage.body = v.error ?? wbvaFormattedMessage.body
   return wbvaFormattedMessage
 }
