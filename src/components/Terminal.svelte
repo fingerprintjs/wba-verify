@@ -1,9 +1,11 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte'
   import { verification } from '../stores/verification'
+  import { isMuted } from '../stores/audio.ts'
   import { executeXtermCommand, focusXterm, mountXterm } from './xterm.client'
   import { FIGLET, CURL_ENDPOINT_URL, WBA_SPEC_URL } from '../constants'
   import { getSeverity, type Severity } from './../utils/wbavMessagesUtils.ts'
+  import FigletSoundUrl from '../assets/audio/figlet-tick.mp3'
 
   import { spinnerEl, type Spinner } from './spinner'
 
@@ -13,6 +15,25 @@
   // Create loading spinner and xterm.js terminal
   let bootLoader: HTMLElement
   let spinner: Spinner | null = null
+
+  let figletSound: HTMLAudioElement | null = null
+
+  // Subscribe to audio store for muting
+  $: if (figletSound) {
+    figletSound.muted = $isMuted
+  }
+
+  function handleFigletSound() {
+    if (!figletSound || figletSound.muted) return
+
+    // randomize volume for effect
+    const random = Math.random()
+    figletSound.volume = random * (0.4 - 0.2) + 0.2
+    figletSound.playbackRate = random * (1.25 - 0.5) + 0.5
+
+    figletSound.currentTime = 0
+    figletSound.play().catch(() => {})
+  }
 
   let xtermEl: HTMLDivElement
   let xtermMounted = false
@@ -99,9 +120,16 @@
   }
 
   onMount(() => {
+    // Start boot sequence with initial test
     spinner = spinnerEl(bootLoader, 'VERIFYING BOT...')
     verification.run(CURL_ENDPOINT_URL)
+
+    // Initialize date
     calculateEightiesDate()
+
+    // Figlet SFX
+    figletSound = new Audio(FigletSoundUrl)
+    figletSound.preload = 'auto'
   })
 
   onDestroy(() => {
@@ -114,7 +142,7 @@
     <!-- Banner -->
     <div class="terminal__figlet" aria-hidden="true">
       {#each figletLines as line, i}
-        <pre class="terminal__figlet-line" style="--i:{i}">{line}</pre>
+        <pre class="terminal__figlet-line" style="--i:{i}" onmouseenter={handleFigletSound}>{line}</pre>
       {/each}
     </div>
 
