@@ -267,7 +267,7 @@
   /* TERMINAL FIGLET AND META DETAILS */
   .terminal__figlet,
   .terminal__meta {
-    z-index: 1; /* z-index is required to fix a filter: blur() rendering issue on Safari 18.2 */
+    z-index: 1; /* z-index is required to prevent a Safari 18.2 bug from applying a heavier blur */
   }
 
   .terminal__figlet {
