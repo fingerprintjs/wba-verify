@@ -140,7 +140,6 @@
     window.addEventListener(
       'keydown',
       () => {
-        console.log('Warming up audio context')
         isAudioWarmedUp = true
         if (audioCtx?.state === 'suspended') {
           audioCtx.resume()
