@@ -39,6 +39,12 @@ const INTRO =
   `${ANSI.fg.dim}2.${ANSI.reset} If verification fails, ensure your bot has the required headers.\r\n` +
   `${ANSI.fg.dim}3.${ANSI.reset} Enter ${ANSI.bold}curl${ANSI.reset} for API, ${ANSI.bold}help${ANSI.reset} for commands.\r\n`
 
+const CURL_CMD_PLAIN = `curl -H "Accept: application/json" \\
+     -H "Signature: sig1=..." \\
+     -H "Signature-Input: sig1=..." \\
+     -H "Signature-Agent: https://chatgpt.com" \\
+     ${CURL_ENDPOINT_URL}`
+
 const CURL_CMD = `${ANSI.fg.dim}curl -H "Accept: application/json" \\
      -H "Signature: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
      -H "Signature-Input: sig1=${ANSI.reset}...${ANSI.fg.dim}" \\
@@ -130,7 +136,7 @@ function curlCommand(_args: string[], term: Xterm.Terminal) {
     defaultYes: true,
     onYes: async (t) => {
       try {
-        await navigator.clipboard.writeText(CURL_CMD)
+        await navigator.clipboard.writeText(CURL_CMD_PLAIN)
         t.write(`\r\n${ANSI.fg.green}✓ curl copied to clipboard${ANSI.reset}`)
       } catch {
         t.write(`\r\n${ANSI.fg.red}Failed to copy to clipboard${ANSI.reset}`)

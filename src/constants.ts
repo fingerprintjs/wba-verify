@@ -1,5 +1,5 @@
 // API endpoints
-export const CURL_ENDPOINT_URL = 'https://webbotauth-api.fpjs.io/api/verify'
+export const CURL_ENDPOINT_URL = 'https://api.fingerprint-webbotauth.com/api/verify'
 
 // URLs
 export const FINGERPRINT_DASHBOARD_ROOT = 'https://dashboard.fingerprint.com'
