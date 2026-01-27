@@ -1,3 +1,6 @@
+// This file contains public constants used throughout the project.
+// DO NOT STORE ANY SECRETS OR SENSITIVE INFO HERE.
+
 // API endpoints
 export const CURL_ENDPOINT_URL = 'https://api.fingerprint-webbotauth.com/api/verify'
 
