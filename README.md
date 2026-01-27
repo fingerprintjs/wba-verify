@@ -1,6 +1,14 @@
 # WBA Verify
 
-Frontend for the wba-quickstart - to handle Web Bot Authentication
+Web Bot Authentication Verification tool by Fingerprint
+
+WBA Verify is a frontend app that allows developers to test and validate Web Bot Authentication (WBA) requests end-to-end
+
+It is designed to verify that HTTP Message Signatures are generated correctly by automated clients (bots, agents, crawlers) according to RFC 9421, and that public key discovery and cryptographic validation work as expected.
+
+This project pairs with the backend verification service:
+
+⚙️ Backend API: https://github.com/fingerprintjs/wba-verify-api
 
 ## 🚀 Tech Stack
 
