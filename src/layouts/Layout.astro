@@ -1,3 +1,6 @@
+---
+import ogImage from '../assets/images/og.gif'
+---
 <!doctype html>
 <html lang='en'>
   <head>
@@ -18,8 +21,8 @@
     <meta property='og:type' content='website' />
     <meta property='og:site_name' content='Fingerprint Web Bot Auth Verification' />
     <meta property='og:url' content='https://fingerprint.com/web-bot-auth/test' />
-    <meta property='og:image' content='./og.gif' />
-    <meta property='twitter:image' content='./og.gif' />
+    <meta property='og:image' content={ogImage.src} />
+    <meta property='twitter:image' content={ogImage.src} />
     <meta property='twitter:card' content='summary_large_image' />
   </head>
   <body>
